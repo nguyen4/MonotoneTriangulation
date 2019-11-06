@@ -8,14 +8,20 @@ Polygon             poly       = new Polygon();
 
 
 boolean saveImage = false;
-boolean showPotentialDiagonals = true;
-boolean showDiagonals = true;
+boolean showPotentialDiagonals = false;
+boolean showDiagonals = false;
 
+// ANIMATION
+boolean showX = false, showY = false;
 
 void setup(){
   size(800,800,P3D);
   frameRate(30);
 }
+
+// Rectangle (line) drag sweep variables
+int x = 21, y = 140, a = 2, b = height - 300;
+
 
 
 void draw(){
@@ -86,6 +92,14 @@ void draw(){
   textRHC( "Closed Boundary: " + (poly.isClosed()?"True":"False"), 550, 40 );
   textRHC( "Simple Boundary: " + (poly.isSimple()?"True":"False"), 550, 20 );
   
+  poly.orderedPoints();
+  
+  if (showX) {
+    
+  }
+  textRHC( "x: X-Axis Sweep", 10, 80);
+  textRHC( "y: Y-Axis Sweep", 10, 60);
+  
   for( int i = 0; i < points.size(); i++ ){
     textRHC( i+1, points.get(i).p.x+5, points.get(i).p.y+15 );
   }
@@ -93,6 +107,71 @@ void draw(){
   if( saveImage ) saveFrame( ); 
   saveImage = false;
   
+  // ANIMATION
+  
+  // show X axis
+  if (showX) {
+    // Make two shapes
+    rect(x, y, width, 2);
+    fill(255);
+    ellipse(x-(25/2), y, 25, 25);
+      
+    // RULER DRAG
+    // y-axis line
+    x = mouseX;
+    y = height - mouseY;
+    cursor(HAND);
+    
+    if (poly.isClosed()) {
+      if ((height - mouseY) < 140) {
+       textSize(32);
+       fill(0, 102, 153);
+       //if (poly.isConvex()) {
+       //  textRHC("CONVEX", 10, 30); 
+       //} else {
+       //  textRHC("NOT CONVEX", 10, 30);
+       //}
+       if (poly.isYMonotone()) {
+         textRHC("YMono", 10, 30);
+       } else {
+         
+         textRHC("Not YMono", 10, 30);
+       }
+      }
+    }
+  }
+  
+  // show Y axis
+  if (showY) {
+    // Make two shapes
+    rect(x, y, 2, height);
+    fill(255);
+    ellipse(x, y-(25/2), 25, 25);
+      
+    // RULER DRAG
+    // y-axis line
+    x = mouseX;
+    y = height - mouseY;
+    cursor(HAND);
+    
+    if (poly.isClosed()) {
+      if (mouseX > width - 100) {
+       textSize(32);
+       fill(0, 102, 153);
+       //if (poly.isConvex()) {
+       //  textRHC("CONVEX", 10, 30); 
+       //} else {
+       //  textRHC("NOT CONVEX", 10, 30);
+       //}
+       if (poly.isXMonotone()) {
+         textRHC("XMono", 10, 30);
+       } else {
+         
+         textRHC("Not XMono", 10, 30);
+       }
+      }
+    }
+  }
 }
 
 
@@ -101,6 +180,10 @@ void keyPressed(){
   if( key == 'c' ){ points.clear(); poly = new Polygon(); }
   if( key == 'p' ) showPotentialDiagonals = !showPotentialDiagonals;
   if( key == 'd' ) showDiagonals = !showDiagonals;
+  
+  // Ruler
+  if ( key == 'x' ) { showX = !showX; }
+  if ( key == 'y' ) { showY = !showY; }
 }
 
 
@@ -120,22 +203,27 @@ void textRHC( String s, float x, float y ){
 Point sel = null;
 
 void mousePressed(){
-  int mouseXRHC = mouseX;
-  int mouseYRHC = height-mouseY;
   
-  float dT = 6;
-  for( Point p : points ){
-    float d = dist( p.p.x, p.p.y, mouseXRHC, mouseYRHC );
-    if( d < dT ){
-      dT = d;
-      sel = p;
+  if (!showX && !showY) {
+    
+    int mouseXRHC = mouseX;
+    int mouseYRHC = height-mouseY;
+  
+    float dT = 6;
+    for( Point p : points ){
+      float d = dist( p.p.x, p.p.y, mouseXRHC, mouseYRHC );
+      if( d < dT ){
+        dT = d;
+        sel = p;
+      }
     }
-  }
-  
-  if( sel == null ){
-    sel = new Point(mouseXRHC,mouseYRHC);
-    points.add( sel );
-    poly.addPoint( sel );
+    
+    if( sel == null ){
+      sel = new Point(mouseXRHC,mouseYRHC);
+      points.add( sel );
+      poly.addPoint( sel );
+    }
+    
   }
 }
 

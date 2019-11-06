@@ -210,5 +210,124 @@ class Polygon {
        bdry.add( new Edge( p.get(p.size()-1), p.get(0) ) );
      }
    }
+   
+   boolean isConvex(){
+     // IS POLYGON CONVEX OR NOT
+     //// pick bottom most point and rightmost point for animation
+     //float minY = 800, maxX = -1;
+     //int minYPos = 0, maxXPos = 0;
+     //for (int i = 0; i < points.size(); i++) {
+     //  // max X
+     //  if (points.get(i).p.x > maxX) {
+     //    maxX = points.get(i).p.x;
+     //    maxXPos = i;
+     //  }
+       
+     //  // minY
+     //  if (points.get(i).p.y < minY) {
+     //    minY = points.get(i).p.y;
+     //    minYPos = i;
+     //  }
+     //}
+     
+     Point arbPoint = new Point(0.0,0.0);
+     Triangle test = new Triangle(arbPoint, arbPoint, arbPoint);
+     // mark boolean
+     boolean gotNeg = false;
+     boolean gotPos = false;
+     
+     // actual algorithm? (i, j , k)
+     int j, k;
+     for (int i = 0; i < points.size(); i++) {
+       j = (i + 1) % points.size(); // second point
+       k = (j + 1) % points.size(); // third point
+       
+       // Update all points
+       test.p0 = points.get(i);
+       test.p1 = points.get(j);
+       test.p2 = points.get(k);
+       if (test.ccw()) {
+         gotPos = true;
+       } else if (test.cw()) {
+         gotNeg = true;        
+       }
+       
+       if (gotPos && gotNeg) return false;
+     }
+     return true;
+   }
+   boolean isYMonotone() {
+     
+     int bothNeg = 0;
+     int bothPos = 0;
+     
+     // actual algorithm? (i, j , k)
+     int j, k;
+     for (int i = 0; i < points.size(); i++) {
+       j = (i + 1) % points.size(); // second point
+       k = (j + 1) % points.size(); // third point
+       
+       if (points.get(j).p.y < points.get(i).p.y && points.get(j).p.y < points.get(k).p.y) {
+         // println("i Pos: " +  i + "   " + "j Pos: " +  j + "   " + "k Pos: " +  k);
+         bothNeg++;
+       } else if (points.get(j).p.y > points.get(i).p.y && points.get(j).p.y > points.get(k).p.y) {
+         // println("i Neg: " +  i + "   " + "j Neg: " +  j + "   " + "k Neg: " +  k);
+         bothPos++; 
+       }
+     }
+     //println("bothNeg: ", bothNeg);
+     //println("bothPos: ", bothPos);
+     if (bothNeg >= 2 || bothPos >=2) {
+       return false;
+     }
+     return true; 
+   }
+   
+   boolean isXMonotone() {
+     
+     int bothNeg = 0;
+     int bothPos = 0;
+     
+     // actual algorithm? (i, j , k)
+     int j, k;
+     for (int i = 0; i < points.size(); i++) {
+       j = (i + 1) % points.size(); // second point
+       k = (j + 1) % points.size(); // third point
+       
+       if (points.get(j).p.x < points.get(i).p.x && points.get(j).p.x < points.get(k).p.x) {
+         bothNeg++;
+       } else if (points.get(j).p.x > points.get(i).p.x && points.get(j).p.x > points.get(k).p.x) {
+         bothPos++; 
+       }
+     }
+     if (bothNeg >= 2 || bothPos >=2) {
+       return false;
+     }
+     return true; 
+   }
+   void orderedPoints() {
+     Point key1 = new Point(0.0,0.0);
+     
+     ArrayList<Point> orderedPoints = new ArrayList<Point>();
+     for (int i = 0; i < points.size(); i++) {
+      orderedPoints.add(new Point(points.get(i).p.x, points.get(i).p.y)); 
+     }
 
+     for (int i = 1; i < orderedPoints.size(); ++i) {
+      key1.p = orderedPoints.get(i).p;
+      int j = i - 1;
+      while (j >=0 && orderedPoints.get(j).p.y < key1.p.y) {
+       orderedPoints.get(j + 1).p = orderedPoints.get(j).p;
+       
+       j = j - 1;
+      }
+      orderedPoints.get(j+1).p = key1.p;
+     }
+     
+     for (int i = 0; i < orderedPoints.size(); i++) {
+      // println(i + ": * " + points.get(i).p.y); 
+      println(i + ":   " + orderedPoints.get(i).p.y);
+     }
+     // return orderedPoints;
+   } 
 }
