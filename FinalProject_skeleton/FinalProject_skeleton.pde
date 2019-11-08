@@ -53,8 +53,14 @@ void draw(){
   }
   
   stroke( 100, 100, 100 );
-  if( poly.ccw() ) stroke( 100, 200, 100 );
-  if( poly.cw()  ) stroke( 200, 100, 100 ); 
+  if( poly.ccw() ) { 
+    poly.ccw = true;
+    stroke( 100, 200, 100 );
+  }
+  if( poly.cw()  ) {
+    poly.cw = true;
+    stroke( 200, 100, 100 );
+  }
   poly.draw();
   
   
@@ -79,6 +85,7 @@ void draw(){
   stroke(0);
   textSize(18);
   
+  //makePQ();
   // LABELS
   textRHC( "Controls", 10, height-20 );
   textRHC( "d: Show/Hide Diagonals", 10, height-40 );
@@ -92,7 +99,7 @@ void draw(){
   textRHC( "Closed Boundary: " + (poly.isClosed()?"True":"False"), 550, 40 );
   textRHC( "Simple Boundary: " + (poly.isSimple()?"True":"False"), 550, 20 );
   
-  poly.orderedPoints();
+  // poly.orderedPointsPos();
   
   if (showX) {
     
@@ -170,6 +177,7 @@ void draw(){
          textRHC("Not XMono", 10, 30);
        }
       }
+      makePQ();
     }
   }
 }

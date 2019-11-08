@@ -4,6 +4,8 @@ class Polygon {
   
    ArrayList<Point> p     = new ArrayList<Point>();
    ArrayList<Edge>  bdry = new ArrayList<Edge>();
+   boolean ccw = false;
+   boolean cw = false;
      
    Polygon( ){  }
    
@@ -305,12 +307,18 @@ class Polygon {
      }
      return true; 
    }
-   void orderedPoints() {
+   ArrayList<Integer> orderedPointsPos() {
      Point key1 = new Point(0.0,0.0);
      
+     // Ordered points
      ArrayList<Point> orderedPoints = new ArrayList<Point>();
+     // Ordered point position (in relation to original point list)
+     ArrayList<Integer> orderedPointPos = new ArrayList<Integer>();
+     
+     
      for (int i = 0; i < points.size(); i++) {
       orderedPoints.add(new Point(points.get(i).p.x, points.get(i).p.y)); 
+      orderedPointPos.add(i);
      }
 
      for (int i = 1; i < orderedPoints.size(); ++i) {
@@ -318,16 +326,19 @@ class Polygon {
       int j = i - 1;
       while (j >=0 && orderedPoints.get(j).p.y < key1.p.y) {
        orderedPoints.get(j + 1).p = orderedPoints.get(j).p;
+       Collections.swap(orderedPointPos, j+1, j);
        
        j = j - 1;
       }
       orderedPoints.get(j+1).p = key1.p;
+      
      }
      
      for (int i = 0; i < orderedPoints.size(); i++) {
-      // println(i + ": * " + points.get(i).p.y); 
-      println(i + ":   " + orderedPoints.get(i).p.y);
+      //println(i + ": * " + points.get(i).p.y); 
+      //println(i + ":   " + orderedPoints.get(i).p.y);
+      println(i + ": & " + (orderedPointPos.get(i)+1));
      }
-     // return orderedPoints;
+     return orderedPointPos;
    } 
 }
