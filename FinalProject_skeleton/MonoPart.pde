@@ -32,7 +32,7 @@ void makePQ() {
     }
    }
    // Call findVertexType() (of vertex) method
-   type = findVertexType(currPoint, edges.get(0), edges.get(1));
+   type = findVertexType(orderedPoints, originalPos);
    
    //println("Before");
    Event e = new Event(currPoint, edges.get(0), edges.get(1), type, originalPos);
@@ -49,24 +49,17 @@ void makePQ() {
   println();
   
 }
-int findVertexType(Point c, Edge e1, Edge e2) {
-    
-  Point e1ePoint, e2ePoint;
+int findVertexType(ArrayList<Integer> orderedPoints, int originalPos) {    
   
+  // get current point's 1st neighbor
+  // HAVING PROBLEMS CAN YOU FIGURE OUT HOW TO 
+  int neighbor1Pos = (originalPos - 1) % orderedPoints.size();
   
-  // check for intersection with edge 1 
-  if (c.p.x == e1.p0.p.x && c.p.y == e1.p0.p.y) {
-    e1ePoint = e1.p1;
-  } else {
-    e1ePoint = e1.p0;
-  }
+  // get current point's 2nd neighbor
+  int neighbor2Pos = (originalPos + 1) % orderedPoints.size();
   
-  // and edge 2
-  if (c.p.x == e2.p0.p.x && c.p.y == e2.p0.p.y) {
-    e2ePoint = e2.p1;
-  } else {
-    e2ePoint = e2.p0;
-  }
+  Point c = points.get(originalPos), e1ePoint = points.get(neighbor1Pos), e2ePoint = points.get(neighbor2Pos);
+  
   
   // check if different signs
   if (c.p.y > e1ePoint.p.y && c.p.y < e2ePoint.p.y || c.p.y < e1ePoint.p.y && c.p.y > e2ePoint.p.y) {
@@ -74,8 +67,6 @@ int findVertexType(Point c, Edge e1, Edge e2) {
   }
   
   Triangle test;
-  ArrayList<Point> points = new ArrayList<Point>();
-  if ()
   
   // FUN PART
   // table vertex
@@ -90,42 +81,25 @@ int findVertexType(Point c, Edge e1, Edge e2) {
     
     // + + (checking difference between merge and end)
     if (c.p.y < e1ePoint.p.y && c.p.y < e2ePoint.p.y) {
-      // check which endpoint is on the left
-      if (e1ePoint.p.x < e2ePoint.p.x) { // e1e, point c, e2e
-       test = new Triangle(e1ePoint, c, e2ePoint);
-       if (test.ccw()) {
-         return 3;
-       } else {
-         return 4;
-       }
-      } else { // e2e, point c, e1e
-       test = new Triangle(e2ePoint, c, e1ePoint);
-       if (test.ccw()) {
-         return 3;
-       } else {
-         return 4;
-       }
+      // e1e, point c, e2e
+      test = new Triangle(e1ePoint, c, e2ePoint);
+      if (test.ccw()) {
+       return 3;
+      } else {
+       return 4;
       }
       // collinear???
       
       // - - (checking difference between start and split
     } else if (c.p.y > e1ePoint.p.y && c.p.y > e2ePoint.p.y){
       // check which endpoint is on the left
-      if (e1ePoint.p.x < e2ePoint.p.x) { // e1e, point c, e2e
-       test = new Triangle(e1ePoint, c, e2ePoint);
-       if (test.ccw()) {
-         return 2;
-       } else {
-         return 5;
-       }
-      } else { // e2e, point c, e1e
-       test = new Triangle(e2ePoint, c, e1ePoint);
-       if (test.ccw()) {
-         return 2;
-       } else {
-         return 5;
-       }
-      }    
+      // e1e, point c, e2e
+      test = new Triangle(e1ePoint, c, e2ePoint);
+      if (test.ccw()) {
+       return 2;
+      } else {
+       return 5;
+      }
     }
     
     // POLYGON IS CW
@@ -140,34 +114,19 @@ int findVertexType(Point c, Edge e1, Edge e2) {
        } else {
          return 4;
        }
-      } else { // e2e, point c, e1e
-       test = new Triangle(e2ePoint, c, e1ePoint);
-       if (test.cw()) {
-         return 3;
-       } else {
-         return 4;
-       }
-      }
+      } 
       // collinear???
       
     // - - (checking difference between start and split
     } else if (c.p.y > e1ePoint.p.y && c.p.y > e2ePoint.p.y){
       
       // check which endpoint is on the left
-      if (e1ePoint.p.x < e2ePoint.p.x) { // e1e, point c, e2e
-       test = new Triangle(e1ePoint, c, e2ePoint);
-       if (test.cw()) {
-         return 2;
-       } else {
-         return 5;
-       }
-      } else { // e2e, point c, e1e
-       test = new Triangle(e2ePoint, c, e1ePoint);
-       if (test.cw()) {
-         return 2;
-       } else {
-         return 5;
-       }
+      // e1e, point c, e2e
+      test = new Triangle(e1ePoint, c, e2ePoint);
+      if (test.cw()) {
+        return 2;
+      } else {
+        return 5;
       }    
     }
   }
