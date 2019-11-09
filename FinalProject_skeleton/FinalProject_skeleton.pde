@@ -115,21 +115,23 @@ void draw(){
   saveImage = false;
   
   // ANIMATION
-  
-  // show X axis
-  if (showX) {
-    // Make two shapes
-    rect(x, y, width, 2);
-    fill(255);
-    ellipse(x-(25/2), y, 25, 25);
-      
-    // RULER DRAG
-    // y-axis line
-    x = mouseX;
-    y = height - mouseY;
-    cursor(HAND);
+  if (poly.isClosed()) {
+    makePQ();
     
-    if (poly.isClosed()) {
+    // show X axis
+    if (showX) {
+      // Make two shapes
+      rect(x, y, width, 2);
+      fill(255);
+      ellipse(x-(25/2), y, 25, 25);
+        
+      // RULER DRAG
+      // y-axis line
+      x = mouseX;
+      y = height - mouseY;
+      cursor(HAND);
+      
+
       if ((height - mouseY) < 140) {
        textSize(32);
        fill(0, 102, 153);
@@ -145,23 +147,22 @@ void draw(){
          textRHC("Not YMono", 10, 30);
        }
       }
-    }
-  }
-  
-  // show Y axis
-  if (showY) {
-    // Make two shapes
-    rect(x, y, 2, height);
-    fill(255);
-    ellipse(x, y-(25/2), 25, 25);
       
-    // RULER DRAG
-    // y-axis line
-    x = mouseX;
-    y = height - mouseY;
-    cursor(HAND);
+    }
     
-    if (poly.isClosed()) {
+    // show Y axis
+    if (showY) {
+      // Make two shapes
+      rect(x, y, 2, height);
+      fill(255);
+      ellipse(x, y-(25/2), 25, 25);
+        
+      // RULER DRAG
+      // y-axis line
+      x = mouseX;
+      y = height - mouseY;
+      cursor(HAND);
+      
       if (mouseX > width - 100) {
        textSize(32);
        fill(0, 102, 153);
@@ -177,7 +178,6 @@ void draw(){
          textRHC("Not XMono", 10, 30);
        }
       }
-      makePQ();
     }
   }
 }

@@ -51,12 +51,18 @@ void makePQ() {
 }
 int findVertexType(ArrayList<Integer> orderedPoints, int originalPos) {    
   
+  int neighbor1Pos;
+  
   // get current point's 1st neighbor
   // HAVING PROBLEMS CAN YOU FIGURE OUT HOW TO 
-  int neighbor1Pos = (originalPos - 1) % orderedPoints.size();
+  if (originalPos == 0) {
+   neighbor1Pos = points.size() - 1; 
+  } else {
+   neighbor1Pos = (originalPos - 1) % points.size();
+  }
   
   // get current point's 2nd neighbor
-  int neighbor2Pos = (originalPos + 1) % orderedPoints.size();
+  int neighbor2Pos = (originalPos + 1) % points.size();
   
   Point c = points.get(originalPos), e1ePoint = points.get(neighbor1Pos), e2ePoint = points.get(neighbor2Pos);
   
