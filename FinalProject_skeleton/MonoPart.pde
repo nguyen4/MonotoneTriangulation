@@ -1,20 +1,75 @@
 String[] myType = { "Collinear", "Regular", "Start", "End", "Merge", "Split" };
 
-void makePQ() {
+void MonotonePartition(){
   
-  // Event Class Arraylist
+  //initialize the priorityQueue
+  ArrayList<Event> pq = makePQ();
+  
+  //create an active edge list that stores edges from left to right
+  ArrayList<Edge> ActiveEdges = new ArrayList<Edge>();
+  
+  //initialize Attention list of Events for split and merge vertices
+  ArrayList<Event> Attention = new ArrayList<Event>();
+  
+  /*while queue not empty
+    * check current vertex
+    
+    * if start
+      * add both of its edges to the edge list
+    
+    * else if end
+      * rm both of its edges from the edge list
+      
+    * else if reg
+      * rm edge above vertex and add edge below it to edge list
+      
+    * else if merge
+      * add to Attention list
+      
+    * else if split
+      * add to Attention list
+    
+    if (Attention is not empty) 
+      if merge
+        call merge_helper to handle the merge/split vertices issues here
+        
+      if split
+        call split_helper to handle the merge/split vertices issues here
+    
+  */
+} 
+      
+
+void merge_Helper(Event current, Event merge) {
+  /*
+  make an edge between current and merge point
+  if edge(or diagonal) is legit and inside polygon
+    add that edge to Poly.bdry
+    return
+  */
+  
+}
+
+void split_Helper(ArrayList<Event> pq, Event split) {
+  /*
+  for each event in pq backwards from the element of split
+    make an edge between split and that point from event in pq
+    if edge is legit and inside polygon
+      if edge does not already exists in Poly.bdry
+        add to Poly.bdry
+        return
+  */
+}
+
+ArrayList<Event> makePQ() {
+  
   ArrayList<Event> pQueue = new ArrayList<Event>();
-  
   ArrayList<Integer> orderedPoints = new ArrayList<Integer>();
-  orderedPoints = poly.orderedPointsPos();
-  
-  
-  // Declare 4 variables to add to Event constructor
+  int type;
   Point currPoint;
   
-  int type;
+  orderedPoints = poly.orderedPointsPos();
   
- 
   for (int i = 0; i < orderedPoints.size(); i++) {
    int originalPos = orderedPoints.get(i);
    currPoint = points.get(originalPos);
@@ -31,12 +86,12 @@ void makePQ() {
         edges.add(poly.bdry.get(j));
     }
    }
-   // Call findVertexType() (of vertex) method
+   
+   //FIND TYPE OF VERTEX
    type = findVertexType(orderedPoints, originalPos);
    
-   //println("Before");
+   //CREATE NEW EVENT AND ADD TO QUEUE
    Event e = new Event(currPoint, edges.get(0), edges.get(1), type, originalPos);
-   //println("event created");
    pQueue.add(e);
    
   }
@@ -48,7 +103,10 @@ void makePQ() {
   }
   println();
   
+  return pQueue;
+  
 }
+
 int findVertexType(ArrayList<Integer> orderedPoints, int originalPos) {    
   
   int neighbor1Pos;
@@ -65,7 +123,6 @@ int findVertexType(ArrayList<Integer> orderedPoints, int originalPos) {
   int neighbor2Pos = (originalPos + 1) % points.size();
   
   Point c = points.get(originalPos), e1ePoint = points.get(neighbor1Pos), e2ePoint = points.get(neighbor2Pos);
-  
   
   // check if different signs
   if (c.p.y > e1ePoint.p.y && c.p.y < e2ePoint.p.y || c.p.y < e1ePoint.p.y && c.p.y > e2ePoint.p.y) {
@@ -113,14 +170,14 @@ int findVertexType(ArrayList<Integer> orderedPoints, int originalPos) {
     // + + (checking difference between merge and end)
     if (c.p.y < e1ePoint.p.y && c.p.y < e2ePoint.p.y) {
       // check which endpoint is on the left
-      if (e1ePoint.p.x < e2ePoint.p.x) { // e1e, point c, e2e
+      // e1e, point c, e2e
        test = new Triangle(e1ePoint, c, e2ePoint);
        if (test.cw()) {
          return 3;
        } else {
          return 4;
        }
-      } 
+      
       // collinear???
       
     // - - (checking difference between start and split
