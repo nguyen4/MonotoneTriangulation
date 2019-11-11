@@ -295,12 +295,21 @@ int findVertexType(ArrayList<Integer> orderedPoints, int originalPos) {
       println("c.p.y: ", c.p.y);
       // check which endpoint is on the left
       // e1e, point c, e2e
+<<<<<<< HEAD
        test = new Triangle(e1ePoint, c, e2ePoint);
        if (test.cw()) {
          return 3;
        } else {
          return 4;
        }
+=======
+      test = new Triangle(e1ePoint, c, e2ePoint);
+      if (test.cw()) {
+       return 3;
+      } else {
+       return 4;
+      }
+>>>>>>> master
       // collinear???
       
     // - - (checking difference between start and split
