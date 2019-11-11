@@ -341,4 +341,19 @@ class Polygon {
      }
      return orderedPointPos;
    } 
+   
+boolean edgeExists(Edge e){
+     
+    for (int i = 0; i < bdry.size(); i++){
+      if (e.p0.getX() == bdry.get(i).p0.getX() && e.p0.getY() == bdry.get(i).p0.getY() &&
+          e.p1.getX() == bdry.get(i).p1.getX() && e.p1.getY() == bdry.get(i).p1.getY() ||
+          e.p0.getX() == bdry.get(i).p1.getX() && e.p0.getY() == bdry.get(i).p1.getY() &&
+          e.p1.getX() == bdry.get(i).p0.getX() && e.p1.getY() == bdry.get(i).p0.getY())
+          {
+            return true;
+          }
+    }
+    
+    return false;
+  }
 }
