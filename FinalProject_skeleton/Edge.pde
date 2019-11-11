@@ -82,4 +82,16 @@ class Edge{
     return new Point( P );     
   }
   
+  //finds the x value of the edge where the line sweep is currently at
+  float sweep_x_pos(float y){
+    
+    float m = (p1.p.y - p0.p.y)/(p1.p.x - p0.p.x);
+    return (y + m*p1.p.x - p1.p.y)/m;
+  
+  }
+  
+  void Print(){
+    println("Neighbor vertex 1: " + p0.toString());
+    println("Neighbor vertex 2: " + p1.toString());
+  }
 }
