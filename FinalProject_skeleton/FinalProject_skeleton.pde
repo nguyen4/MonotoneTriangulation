@@ -85,13 +85,13 @@ void draw(){
   stroke(0);
   textSize(18);
   
-  //makePQ();
   // LABELS
   textRHC( "Controls", 10, height-20 );
   textRHC( "d: Show/Hide Diagonals", 10, height-40 );
   textRHC( "p: Show/Hide Potential Diagonals", 10, height-60 );
   textRHC( "c: Clear Polygon", 10, height-80 );
   textRHC( "s: Save Image", 10, height-100 );
+  textRHC( "m: Monotone Partition", 10, height-120 );
   
 
   textRHC( "Clockwise: " + (poly.cw()?"True":"False"), 550, 80 );
@@ -116,7 +116,6 @@ void draw(){
   
   // ANIMATION
   if (poly.isClosed()) {
-    makePQ();
     
     // show X axis
     if (showX) {
@@ -192,6 +191,9 @@ void keyPressed(){
   // Ruler
   if ( key == 'x' ) { showX = !showX; }
   if ( key == 'y' ) { showY = !showY; }
+  
+  //Monoton Partiton
+  if ( key == 'm' ) { MonotonePartition(); poly.draw(); }
 }
 
 
