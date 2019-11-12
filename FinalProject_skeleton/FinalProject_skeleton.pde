@@ -5,7 +5,7 @@ ArrayList<Point>    points     = new ArrayList<Point>();
 ArrayList<Edge>     edges      = new ArrayList<Edge>();
 ArrayList<Triangle> triangles  = new ArrayList<Triangle>();
 Polygon             poly       = new Polygon();
-
+String              message    = null;
 
 boolean saveImage = false;
 boolean showPotentialDiagonals = false;
@@ -99,7 +99,9 @@ void draw(){
   textRHC( "Closed Boundary: " + (poly.isClosed()?"True":"False"), 550, 40 );
   textRHC( "Simple Boundary: " + (poly.isSimple()?"True":"False"), 550, 20 );
   
-  // poly.orderedPointsPos();
+  // MESSAGES
+  if (message != null)
+    textRHC( message, width/2, height-120 );
   
   if (showX) {
     
@@ -192,8 +194,9 @@ void keyPressed(){
   if ( key == 'x' ) { showX = !showX; }
   if ( key == 'y' ) { showY = !showY; }
   
-  //Monoton Partiton
-  if ( key == 'm' ) { MonotonePartition(); poly.draw(); }
+  //Monotone Partition
+  if ( key == 'm' && poly.isSimple()) { MonotonePartition(); poly.draw(); message = null; }
+  else { message = "PlEASE MAKE A SIMPLE POLYGON";}
 }
 
 

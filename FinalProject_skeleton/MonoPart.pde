@@ -16,25 +16,16 @@ void MonotonePartition(){
     int type = pq.get(i).type;
     Event curr = pq.get(i);
     
-    //println("Event " + (i+1));
-    
-    
     if (type == 2) // if start vertex
     {
       // add both of its edges to the edge list
-      for (Edge e : curr.edges){
-        //println("Edge ");
-        e.Print();
-        ActiveEdges.addEdge(e);
-      }
+      for (Edge e : curr.edges){ ActiveEdges.addEdge(e); }
     }
      
     else if (type == 3) // else if end vertex
     {
       // rm both of its edges from the edge list
-      for (Edge e: curr.edges){
-        ActiveEdges.removeEdge(e);
-      }
+      for (Edge e: curr.edges){ ActiveEdges.removeEdge(e); }
     }
      
     else if (type == 1) // else if reg vertex
@@ -75,10 +66,7 @@ void MonotonePartition(){
     else if (type == 4) //else if merge
     {
       //remove both of its edges of merge vertex from ActiveEdges list add the event to the Attention list
-      //println("Removing edges");
-      for (Edge e : curr.edges) { 
-        ActiveEdges.removeEdge(e); 
-      }
+      for (Edge e : curr.edges) { ActiveEdges.removeEdge(e); }
       Attention.add(curr);
       println("Done");
       
@@ -116,6 +104,13 @@ void MonotonePartition(){
   
 } 
 
+ArrayList<Polygon> Partition(){
+  
+  ArrayList<Polygon> subPolygons = new ArrayList<Polygon>();
+  
+  return null;
+}
+
 Edge merge_Helper(Event current, Event merge) {
   
   //make an edge between current and merge point
@@ -140,14 +135,7 @@ Edge split_Helper(int i, ArrayList<Event> pq, Event split) {
       }
     }
   }
-  /*
-  for each event in pq backwards from the element of split
-    make an edge between split and that point from event in pq
-    if edge is legit
-      if edge does not already exists in Poly.bdry
-        add to Poly.bdry
-        return
-  */
+
   return null;
 }
 
