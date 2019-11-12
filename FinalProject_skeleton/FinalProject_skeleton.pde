@@ -196,7 +196,7 @@ void keyPressed(){
   
   //Monotone Partition
   if ( key == 'm' && poly.isSimple()) { MonotonePartition(); poly.draw(); message = null; }
-  else { message = "PlEASE MAKE A SIMPLE POLYGON";}
+  else { message = "PLEASE MAKE A SIMPLE POLYGON";}
 }
 
 
