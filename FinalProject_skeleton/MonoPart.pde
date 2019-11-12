@@ -280,15 +280,15 @@ int findVertexType(ArrayList<Integer> orderedPoints, int originalPos) {
   } else {
     // + + (checking difference between merge and end)
     if (c.p.y < e1ePoint.p.y && c.p.y < e2ePoint.p.y) {
+      println("c.p.y: ", c.p.y);
       // check which endpoint is on the left
       // e1e, point c, e2e
-       test = new Triangle(e1ePoint, c, e2ePoint);
-       if (test.cw()) {
-         return 3;
-       } else {
-         return 4;
-       }
-      
+      test = new Triangle(e1ePoint, c, e2ePoint);
+      if (test.cw()) {
+       return 3;
+      } else {
+       return 4;
+      }
       // collinear???
       
     // - - (checking difference between start and split
