@@ -1,5 +1,3 @@
-
-
 class Edge{
   
    Point p0,p1;

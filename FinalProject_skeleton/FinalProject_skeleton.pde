@@ -1,11 +1,14 @@
 
 import java.util.*;
 
-ArrayList<Point>    points     = new ArrayList<Point>();
-ArrayList<Edge>     edges      = new ArrayList<Edge>();
-ArrayList<Triangle> triangles  = new ArrayList<Triangle>();
-Polygon             poly       = new Polygon();
-String              message    = null;
+ArrayList<Point>          points     = new ArrayList<Point>();
+ArrayList<Edge>           edges      = new ArrayList<Edge>();
+ArrayList<Triangle>       triangles  = new ArrayList<Triangle>();
+Polygon                   poly       = new Polygon();
+String                    message    = null;
+//TESTING PURPOSE
+int                       state      = 0;
+DirectedGraph             dG         ;
 
 boolean saveImage = false;
 boolean showPotentialDiagonals = false;
@@ -52,17 +55,24 @@ void draw(){
     t.draw();
   }
   
-  stroke( 100, 100, 100 );
-  if( poly.ccw() ) { 
-    poly.ccw = true;
-    stroke( 100, 200, 100 );
+  if (state == 0){
+    //green if ccw
+    stroke( 100, 100, 100 );
+    if( poly.ccw() ) { 
+      poly.ccw = true;
+      stroke( 100, 200, 100 );
+    }
+    //red if cw
+    if( poly.cw()  ) {
+      poly.cw = true;
+      stroke( 200, 100, 100 );
+    }
+    poly.draw();
+    }
+  if (state == 1){
+    stroke( 100, 100, 100 );
+    dG.draw();
   }
-  if( poly.cw()  ) {
-    poly.cw = true;
-    stroke( 200, 100, 100 );
-  }
-  poly.draw();
-  
   
   if( showPotentialDiagonals ){
     strokeWeight(1);
@@ -186,7 +196,7 @@ void draw(){
 
 void keyPressed(){
   if( key == 's' ) saveImage = true;
-  if( key == 'c' ){ points.clear(); poly = new Polygon(); }
+  if( key == 'c' ){ points.clear(); poly = new Polygon(); state = 0;}
   if( key == 'p' ) showPotentialDiagonals = !showPotentialDiagonals;
   if( key == 'd' ) showDiagonals = !showDiagonals;
   

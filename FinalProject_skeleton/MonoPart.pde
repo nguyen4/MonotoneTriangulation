@@ -11,6 +11,8 @@ void MonotonePartition(){
   //initialize Attention list of Events for split and merge vertices
   ArrayList<Event> Attention = new ArrayList<Event>();
   
+  LinkedList<Edge> splitMerge = new LinkedList<Edge>();
+  
   for(int i = 0; i < pq.size(); i++){
     
     int type = pq.get(i).type;
@@ -87,6 +89,7 @@ void MonotonePartition(){
         Edge newEdge = merge_Helper(curr, Attention.get(j));
         if (newEdge != null){
           poly.bdry.add(newEdge);
+          splitMerge.add(newEdge);
           Attention.remove(j);
         }
       }
@@ -94,20 +97,30 @@ void MonotonePartition(){
         Edge newEdge = split_Helper(i, pq, Attention.get(j));
         if (newEdge != null){
           poly.bdry.add(newEdge);
+          splitMerge.add(newEdge);
           Attention.remove(j);
         }
       }
     }
   }
   
+  Partition(splitMerge);
   //return sub polygons
   
 } 
 
-ArrayList<Polygon> Partition(){
+ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
   
   ArrayList<Polygon> subPolygons = new ArrayList<Polygon>();
   
+  /*
+    create a directed graph
+  */
+  dG = new DirectedGraph(poly.p, diagList);
+  state = 1;
+  /*
+    Find the sub polygons
+  */
   return null;
 }
 
