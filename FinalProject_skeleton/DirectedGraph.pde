@@ -48,12 +48,42 @@ class DirectedGraph {
   
   void draw(){
     
-     //println( bdry.size() );
      for (int i = 0; i < adjList.size(); i++){
        adjList.get(i).get(0).draw();
        for (Point p : adjList.get(i)){
          Edge e = new Edge(adjList.get(i).get(0), p);
          e.draw();
+       }
+     }
+   }
+   
+   boolean exists(Point p){
+     
+     for (int i = 0; i < adjList.size(); i++){
+       if (p.equals(adjList.get(i).get(0))){ return true; }
+     }
+     return false;
+     
+   }
+   
+   LinkedList getNeighbors(Point p){
+     for (int i = 0; i < adjList.size(); i++){
+       if (p.equals(adjList.get(i).get(0))){
+         return adjList.get(i);
+       }
+     }
+     
+     return null;
+   }
+   
+   void BEGONYATHOT(Point start, Point end){
+     
+     for (int i = 0; i < adjList.size(); i++){
+       if (start.equals( adjList.get(i).get(0) )){
+         adjList.get(i).remove(end);
+       }
+       if (adjList.get(i).size() <= 1){
+         adjList.remove(i);
        }
      }
    }

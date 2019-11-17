@@ -18,19 +18,19 @@ void MonotonePartition(){
     int type = pq.get(i).type;
     Event curr = pq.get(i);
     
-    if (type == 2) // if start vertex
+    if (type == 2)        // if start vertex
     {
       // add both of its edges to the edge list
       for (Edge e : curr.edges){ ActiveEdges.addEdge(e); }
     }
      
-    else if (type == 3) // else if end vertex
+    else if (type == 3)   // else if end vertex
     {
       // rm both of its edges from the edge list
       for (Edge e: curr.edges){ ActiveEdges.removeEdge(e); }
     }
      
-    else if (type == 1) // else if reg vertex
+    else if (type == 1)   // else if reg vertex
     {
       try {
         // rm edge above vertex and add edge below it to edge list
@@ -104,26 +104,165 @@ void MonotonePartition(){
     }
   }
   
-  Partition(splitMerge);
+  if(splitMerge.size() > 0);
+      Partition(splitMerge);
   //return sub polygons
   
 } 
 
 ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
   
-  ArrayList<Polygon> subPolygons = new ArrayList<Polygon>();
+  if (diagList.size() == 0) { return null; }
+  
+  ArrayList<Polygon>  subPolygons = new ArrayList<Polygon>();
+  ArrayList<Point>    newCycle;
+  Point               curr;
   
   /*
     create a directed graph
   */
   dG = new DirectedGraph(poly.p, diagList);
   state = 1;
+  
+  ArrayList<Point> stack = new ArrayList<Point>();
+  
+  //this may create duplicates in the stack
+  for (Edge e : diagList){
+    stack.add(e.p0);
+    stack.add(e.p1);
+  }
+  
+  while ( stack.size() != 0 ){
+    
+    if ( !dG.exists( stack.get(0) ) ){
+      
+      stack.remove(0);
+    
+    } else {
+    
+      newCycle = new ArrayList<Point>();
+      LinkedList<Point> neighbors = dG.getNeighbors( stack.get(0) );
+      newCycle.add( neighbors.get(0) );
+      newCycle.add( neighbors.get(1) );
+      curr = newCycle.get( newCycle.size()-1 );
+      
+      while( !curr.equals( newCycle.get( 0 ) ) ){
+        
+        neighbors = dG.getNeighbors( curr );
+        
+        if (neighbors.size() > 2){
+          Point p = getCcwNeighbor( newCycle.get( newCycle.size() - 2 ), neighbors );
+          newCycle.add( p );
+        }
+        else if (neighbors.size() == 2){
+          newCycle.add( neighbors.get( 1 ) );
+        }
+        else {
+          println("error in retrieving neighbors");
+        }
+        
+        curr = newCycle.get( newCycle.size() - 1 );
+        
+      }
+      
+      Polygon subPoly = new Polygon();
+      
+      for (int i = 0; i < newCycle.size(); i++){
+        if (i == newCycle.size() - 1){
+          dG.BEGONYATHOT( newCycle.get(i-1), newCycle.get(i) );
+        }
+        else {
+          subPoly.addPoint(newCycle.get(i));
+          dG.BEGONYATHOT( newCycle.get(i), newCycle.get(i+1) );
+          
+        }
+      }
+      
+      subPolygons.add(subPoly);
+      
+    }
+  }
+  //Start of Algorithm
+  /*
+    Initialize stack of points from diagList
+  */
+  
+  //Algorithm
+  /*
+    * If top of stack exists in the polygon
+        start a new arrayList AL of points
+        add that point and its neighbor to AL
+        curr = AL.end
+        
+    *  While curr and first in AL are not the same
+         find neighbors of curr
+         
+         if neighbors.size > 1
+           add neighbor with the smallest ccw angle to AL
+         else if neighbores.size == 1
+           add neighbor to AL
+         else 
+           error
+         
+         curr = next in AL
+    
+    *  for each point p in AL
+         if (end of AL)
+           delete edge in DG
+         else
+           add point to new polygon 
+           delete p + 1 in AL from DG
+           
+         if p in DG is empty, remove from DG
+         
+       add new polygon to list of polygon
+      
+  
+  */
+  
+  
   /*
     Find the sub polygons
   */
   return null;
 }
 
+Point getCcwNeighbor(Point a, LinkedList<Point> neighbors){
+  Point b = neighbors.get(0);
+  Point c;
+  
+  float[] angles = new float[neighbors.size() - 1]; 
+  
+  for (int i = 1; i < neighbors.size(); i++){
+     c = neighbors.get(i);
+     Triangle t = new Triangle(a, b, c);
+     //find angle
+     PVector v1 = PVector.sub( a.p, b.p );
+     PVector v2 = PVector.sub( c.p, b.p );
+     float angle = PVector.angleBetween(v1, v2);
+     
+     if (t.ccw()){
+       angles[i-1] = angle;
+     }
+     else if (t.cw()){
+       angles[i-1] = 360 - angle;
+     }
+     else {
+       angles[i-1] = 0;
+     } 
+  }
+  
+  int minIndex = 0;
+  
+  for (int i = 1; i < angles.length; i++){
+    if (angles[minIndex] > angles[i]){
+      minIndex = i;
+    }
+  }
+  
+  return neighbors.get(minIndex + 1);
+}
+   
 Edge merge_Helper(Event current, Event merge) {
   
   //make an edge between current and merge point

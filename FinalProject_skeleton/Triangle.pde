@@ -28,5 +28,4 @@ class Triangle {
      return z < 0;
    }
    
-   
 }
