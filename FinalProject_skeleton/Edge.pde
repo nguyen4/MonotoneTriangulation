@@ -30,7 +30,10 @@ class Edge{
   
    
   Point midpoint( ){
-    return new Point( PVector.lerp( p0.p, p1.p, 0.5f ) );     
+    
+    Point p = new Point( PVector.lerp( p0.p, p1.p, 0.5f ) );
+    println("Midpoint found");
+    return p;
   }
   
    

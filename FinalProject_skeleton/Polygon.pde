@@ -3,9 +3,9 @@
 class Polygon {
   
    ArrayList<Point> p     = new ArrayList<Point>();
-   ArrayList<Edge>  bdry = new ArrayList<Edge>();
-   boolean ccw = false;
-   boolean cw = false;
+   ArrayList<Edge>  bdry  = new ArrayList<Edge>();
+   boolean ccw            = false;
+   boolean cw             = false;
      
    Polygon( ){  }
    
@@ -44,7 +44,7 @@ class Polygon {
    
    boolean pointInPolygon( Point p ){
      // TODO: Check if the point p is inside of the 
-     ArrayList<Edge> bdry = getBoundary();
+     //ArrayList<Edge> bdry = getBoundary();
       
      // Make another "endpoint". Drag end of "ray" to "infinity" but make y constant
      Point infP = new Point(10000000.0, p.p.y);
@@ -57,20 +57,23 @@ class Polygon {
      // Loop through all possible edges
      int i = 0;
      while (i < bdry.size()) {
+       //FIXME println((i + 1) + "th iteration num of intersections: " + edgeIntersect);
        
        currentEdge = bdry.get(i);
 
        // if there are any intersections evaulate
        if (currentEdge.intersectionTest(infRay)) {
+         //FIXME println("possible intersection found");
          // if there are any intersections get point to evalate edges on right of point
          intersectP = currentEdge.intersectionPoint(infRay);
+         
          
          // Make sure imaginary ray does not count vertexes, if vertex found start over
          if (intersectP != null && (intersectP.p.y == bdry.get(i).p0.p.y || intersectP.p.y == bdry.get(i).p1.p.y)) {
            // increase y endpoint of ray
            infRay.p1.p.y+=50;
            // start over
-           i = 0;
+           i = 0; //GAAAAAAAAAAAAH
            edgeIntersect = 0;
            continue;
          }
@@ -80,8 +83,10 @@ class Polygon {
      }
      // if number of intersections with edges is odd (after all special cases handled), point is in polygon
      if ((edgeIntersect % 2) == 1) {
+       println("Point is in polygon");
        return true;
      }
+     println("Point is not in polygon");
      return false;
    }
    
@@ -345,12 +350,18 @@ class Polygon {
 boolean edgeExists(Edge e){
      
     for (int i = 0; i < bdry.size(); i++){
+      /*
       if (e.p0.getX() == bdry.get(i).p0.getX() && e.p0.getY() == bdry.get(i).p0.getY() &&
           e.p1.getX() == bdry.get(i).p1.getX() && e.p1.getY() == bdry.get(i).p1.getY() ||
           e.p0.getX() == bdry.get(i).p1.getX() && e.p0.getY() == bdry.get(i).p1.getY() &&
           e.p1.getX() == bdry.get(i).p0.getX() && e.p1.getY() == bdry.get(i).p0.getY())
           {
             return true;
+          }
+          */
+      if (e.p0.equals( bdry.get(i).p0 ) && e.p1.equals( bdry.get(i).p1 ) ||
+          e.p1.equals( bdry.get(i).p0 ) && e.p0.equals( bdry.get(i).p1 ) ) {
+          return true;
           }
     }
     

@@ -1,14 +1,17 @@
 
 import java.util.*;
 
-ArrayList<Point>          points     = new ArrayList<Point>();
-ArrayList<Edge>           edges      = new ArrayList<Edge>();
-ArrayList<Triangle>       triangles  = new ArrayList<Triangle>();
-Polygon                   poly       = new Polygon();
-String                    message    = null;
+ArrayList<Point>          points      = new ArrayList<Point>();
+ArrayList<Edge>           edges       = new ArrayList<Edge>();
+ArrayList<Triangle>       triangles   = new ArrayList<Triangle>();
+ArrayList<Polygon>        subPolygons = new ArrayList<Polygon>();
+Iterator<Polygon>         iter         ;
+Polygon                   poly        = new Polygon();
+String                    message     = null;
 //TESTING PURPOSE
-int                       state      = 0;
-DirectedGraph             dG         ;
+int                       state       = 0;
+DirectedGraph             dG          ;
+
 
 boolean saveImage = false;
 boolean showPotentialDiagonals = false;
@@ -60,19 +63,22 @@ void draw(){
     stroke( 100, 100, 100 );
     if( poly.ccw() ) { 
       poly.ccw = true;
+      poly.cw  = false;
       stroke( 100, 200, 100 );
     }
     //red if cw
     if( poly.cw()  ) {
-      poly.cw = true;
+      poly.cw  = true;
+      poly.ccw = false;
       stroke( 200, 100, 100 );
     }
     poly.draw();
     }
-  if (state == 1){
+  
+  /*if (state == 1){
     stroke( 100, 100, 100 );
     dG.draw();
-  }
+  }*/
   
   if( showPotentialDiagonals ){
     strokeWeight(1);
@@ -205,7 +211,19 @@ void keyPressed(){
   if ( key == 'y' ) { showY = !showY; }
   
   //Monotone Partition
-  if ( key == 'm' && poly.isSimple()) { MonotonePartition(); poly.draw(); message = null; }
+  if ( key == 'm' && poly.isSimple()) { 
+    subPolygons = MonotonePartition();
+    if (subPolygons != null ){
+      iter = subPolygons.iterator();
+    }
+    points.clear();
+    poly.draw();
+    message = null; 
+    
+  if ( key == 'n' && iter.hasNext() ){
+    iter.next().draw();
+  }
+  }
   else { message = "PLEASE MAKE A SIMPLE POLYGON";}
 }
 
@@ -245,6 +263,10 @@ void mousePressed(){
       sel = new Point(mouseXRHC,mouseYRHC);
       points.add( sel );
       poly.addPoint( sel );
+      for (Edge e : poly.bdry){
+        e.Print();
+      }
+      println();
     }
     
   }

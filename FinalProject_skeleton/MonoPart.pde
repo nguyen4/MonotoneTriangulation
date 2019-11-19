@@ -1,6 +1,6 @@
 String[] myType = { "Collinear", "Regular", "Start", "End", "Merge", "Split" };
 
-void MonotonePartition(){
+ArrayList<Polygon> MonotonePartition(){
   
   //initialize the priorityQueue
   ArrayList<Event> pq = makePQ();
@@ -67,15 +67,15 @@ void MonotonePartition(){
     
     else if (type == 4) //else if merge
     {
+      println("Found merge");
       //remove both of its edges of merge vertex from ActiveEdges list add the event to the Attention list
       for (Edge e : curr.edges) { ActiveEdges.removeEdge(e); }
       Attention.add(curr);
-      println("Done");
-      
     }
     
     else if (type == 5) // else if split
     {
+      println("Found split");
       //add both of its edges to the ActiveEdges list and add event to Attention list
       for (Edge e : curr.edges) { ActiveEdges.addEdge(e); }
       Attention.add(curr);
@@ -86,28 +86,35 @@ void MonotonePartition(){
     for (int j = 0; j < Attention.size(); j++)
     {
       if (Attention.get(j).type == 4){
+        println("Handling merge");
         Edge newEdge = merge_Helper(curr, Attention.get(j));
         if (newEdge != null){
-          poly.bdry.add(newEdge);
+          //poly.bdry.add(newEdge);
           splitMerge.add(newEdge);
           Attention.remove(j);
+          println("found a new diag for merge");
         }
       }
       else if (Attention.get(j).type == 5){
-        Edge newEdge = split_Helper(i, pq, Attention.get(j));
+        println("Handling split");
+        Edge newEdge = split_Helper(j, pq, Attention.get(j));
         if (newEdge != null){
-          poly.bdry.add(newEdge);
+          //poly.bdry.add(newEdge);
           splitMerge.add(newEdge);
           Attention.remove(j);
+          println("found a new diag for split");
         }
       }
     }
   }
   
+  /*
+  println("Polygon is now Y-Monotone");
   if(splitMerge.size() > 0);
-      Partition(splitMerge);
-  //return sub polygons
+      return Partition(splitMerge);
   
+  */
+  return null;
 } 
 
 ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
@@ -181,6 +188,7 @@ ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
       subPolygons.add(subPoly);
       
     }
+    
   }
   //Start of Algorithm
   /*
@@ -224,7 +232,9 @@ ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
   /*
     Find the sub polygons
   */
-  return null;
+  println("Partitioning Complete");
+  println("Number of sub polygons: " + subPolygons.size());
+  return subPolygons;
 }
 
 Point getCcwNeighbor(Point a, LinkedList<Point> neighbors){
@@ -280,14 +290,18 @@ Edge split_Helper(int i, ArrayList<Event> pq, Event split) {
   Edge newEdge;
   for (int j = i - 1; j >= 0; j--)
   {
-    newEdge = new Edge(pq.get(j).P, split.P);
-    if (!poly.edgeExists(newEdge)) {
+    println("going up 1");
+    newEdge = new Edge(  split.P, pq.get(j).P );
+    println("made an edge between " + split.label + " and " + pq.get(j).label);
+    if (!poly.edgeExists( newEdge )) {
+      println("Edge doesnt exist in polygon");
       if (isDiagonal(newEdge)) {
         return newEdge;
       }
+      println("Edge already exists in polygon");
     }
   }
-
+  println("No possible edge for this split");
   return null;
 }
 
@@ -297,6 +311,7 @@ boolean isDiagonal(Edge diag){
      
     //check if edge does not interesect a bdry
     for (int j = 0; j < bdry.size(); j++){
+      println("Intersection test " + (j+1));
       //if it intersects the boundary
       
       //if the endpoints of the boundary and ray matches, skip
@@ -308,18 +323,21 @@ boolean isDiagonal(Edge diag){
           continue;
         }
       
-      if(diag.intersectionTest(bdry.get(j))){
-        
+      
+      if(diag.intersectionTest( bdry.get(j) )){
+      
         Point intersection = diag.intersectionPoint(bdry.get(j));
         
         if (intersection != null) {
+          println("intersection occured");
           return false;
         }
       }
     }
     
+    print("Checking to see if edge is in polygon");
     //check if the edge is in polygon
-    if (poly.pointInPolygon(diag.midpoint())) { return true; }
+    if (poly.pointInPolygon(diag.midpoint())) { println("Point is in Polygon"); return true; }
       
   return false;
 }
@@ -385,10 +403,10 @@ int findVertexType(ArrayList<Integer> orderedPoints, int originalPos) {
   // get current point's 2nd neighbor
   int neighbor2Pos = (originalPos + 1) % points.size();
   
-  Point c = points.get(originalPos), e1ePoint = points.get(neighbor1Pos), e2ePoint = points.get(neighbor2Pos);
+  Point c = points.get(originalPos), endPoint1 = points.get(neighbor1Pos), endPoint2 = points.get(neighbor2Pos);
   
-  // check if different signs
-  if (c.p.y > e1ePoint.p.y && c.p.y < e2ePoint.p.y || c.p.y < e1ePoint.p.y && c.p.y > e2ePoint.p.y) {
+  // check if it is a regular vertex
+  if (c.p.y > endPoint1.p.y && c.p.y < endPoint2.p.y || c.p.y < endPoint1.p.y && c.p.y > endPoint2.p.y) {
     return 1;
   }
   
@@ -402,25 +420,22 @@ int findVertexType(ArrayList<Integer> orderedPoints, int originalPos) {
   // 4 - merge
   // 5 - split
   
-  // POLYGON IS CCW
+  // WHEN POLYGON IS CCW
   if (poly.ccw) {
     
     // + + (checking difference between merge and end)
-    if (c.p.y < e1ePoint.p.y && c.p.y < e2ePoint.p.y) {
-      // e1e, point c, e2e
-      test = new Triangle(e1ePoint, c, e2ePoint);
+    if (c.p.y < endPoint1.p.y && c.p.y < endPoint2.p.y) {
+      test = new Triangle(endPoint1, c, endPoint2);
       if (test.ccw()) {
        return 3;
       } else {
        return 4;
       }
-      // collinear???
       
       // - - (checking difference between start and split
-    } else if (c.p.y > e1ePoint.p.y && c.p.y > e2ePoint.p.y){
+    } else if (c.p.y > endPoint1.p.y && c.p.y > endPoint2.p.y){
       // check which endpoint is on the left
-      // e1e, point c, e2e
-      test = new Triangle(e1ePoint, c, e2ePoint);
+      test = new Triangle(endPoint1, c, endPoint2);
       if (test.ccw()) {
        return 2;
       } else {
@@ -428,27 +443,21 @@ int findVertexType(ArrayList<Integer> orderedPoints, int originalPos) {
       }
     }
     
-    // POLYGON IS CW
+    // WHEN POLYGON IS CW
   } else {
     // + + (checking difference between merge and end)
-    if (c.p.y < e1ePoint.p.y && c.p.y < e2ePoint.p.y) {
-      println("c.p.y: ", c.p.y);
+    if (c.p.y < endPoint1.p.y && c.p.y < endPoint2.p.y) {
+      println("Found merge/end");
       // check which endpoint is on the left
-      // e1e, point c, e2e
-      test = new Triangle(e1ePoint, c, e2ePoint);
-      if (test.cw()) {
-       return 3;
-      } else {
-       return 4;
-      }
+      test = new Triangle(endPoint1, c, endPoint2);
+      if (test.cw()) { return 3; } 
+      else           { return 4; }
       // collinear???
       
     // - - (checking difference between start and split
-    } else if (c.p.y > e1ePoint.p.y && c.p.y > e2ePoint.p.y){
-      
+    } else if (c.p.y > endPoint1.p.y && c.p.y > endPoint2.p.y){
       // check which endpoint is on the left
-      // e1e, point c, e2e
-      test = new Triangle(e1ePoint, c, e2ePoint);
+      test = new Triangle(endPoint1, c, endPoint2);
       if (test.cw()) {
         return 2;
       } else {
