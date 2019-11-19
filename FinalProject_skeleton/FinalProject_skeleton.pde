@@ -13,16 +13,21 @@ boolean showDiagonals = false;
 
 // ANIMATION
 boolean showX = false, showY = false;
+boolean showTriangles = false;
+boolean showTrianglesAni = false;
+int aniLoop = 0, aniLoop2 = 0;
 
 void setup(){
   size(800,800,P3D);
-  frameRate(30);
+  frameRate(70);
 }
 
 // Rectangle (line) drag sweep variables
-int x = 21, y = 140, a = 2, b = height - 300;
+int xHori = 21, yHori = height-140, a = 2, b = height - 300;
+int x2Hori = width;
 
-
+int xVerti = 21, yVerti = 20;
+int y2Verti = height;
 
 void draw(){
   background(255);
@@ -81,6 +86,16 @@ void draw(){
     }
   }
   
+  //// show triangulation
+  //if( showTriangles ){
+  // strokeWeight(4);
+  // stroke(255, 128, 0); // orange
+  // for ( Edge t : Triangulate()) {
+     
+  //   t.draw();
+  // }
+  //}
+  
   fill(0);
   stroke(0);
   textSize(18);
@@ -98,15 +113,13 @@ void draw(){
   textRHC( "Counterclockwise: " + (poly.ccw()?"True":"False"), 550, 60 );
   textRHC( "Closed Boundary: " + (poly.isClosed()?"True":"False"), 550, 40 );
   textRHC( "Simple Boundary: " + (poly.isSimple()?"True":"False"), 550, 20 );
-  
-  // poly.orderedPointsPos();
-  
-  if (showX) {
-    
-  }
+
+  if (showX) { fill(255, 0, 0); } else { noFill(); }
   textRHC( "x: X-Axis Sweep", 10, 80);
-  textRHC( "y: Y-Axis Sweep", 10, 60);
   
+  fill(0,0,0);
+  if (showY) { fill(255, 0, 0); } 
+  textRHC( "y: Y-Axis Sweep", 10, 60);
   for( int i = 0; i < points.size(); i++ ){
     textRHC( i+1, points.get(i).p.x+5, points.get(i).p.y+15 );
   }
@@ -119,64 +132,168 @@ void draw(){
     
     // show X axis
     if (showX) {
+      ArrayList<Event> pqPresentX = makePQ();
+      ArrayList<Float> midPointsArr = new ArrayList();
       // Make two shapes
-      rect(x, y, width, 2);
-      fill(255);
-      ellipse(x-(25/2), y, 25, 25);
-        
-      // RULER DRAG
-      // y-axis line
-      x = mouseX;
-      y = height - mouseY;
-      cursor(HAND);
+      rect(xHori, yHori, width, 2);
       
-
-      if ((height - mouseY) < 140) {
-       textSize(32);
-       fill(0, 102, 153);
-       //if (poly.isConvex()) {
-       //  textRHC("CONVEX", 10, 30); 
-       //} else {
-       //  textRHC("NOT CONVEX", 10, 30);
-       //}
-       if (poly.isYMonotone()) {
-         textRHC("YMono", 10, 30);
-       } else {
-         
-         textRHC("Not YMono", 10, 30);
-       }
+      Event focus;
+      int neighbor1Pos, originalPos, neighbor2Pos;
+      Edge test;
+      float midPointY = -1;
+      
+      
+      for (int i = 0; i < pqPresentX.size(); i++) {
+       focus = pqPresentX.get(i);
+       if (focus.type == 4 || focus.type == 5) {
+        originalPos = focus.label;
+        if (originalPos == 0) {
+         neighbor1Pos = points.size() - 1; 
+        } else {
+         neighbor1Pos = (originalPos - 1) % points.size();
+        }
+  
+        // get current point's 2nd neighbor
+        neighbor2Pos = (originalPos + 1) % points.size();
+        
+        if ((points.get(neighbor1Pos).p.y < points.get(neighbor2Pos).p.y && focus.type == 4) || ((points.get(neighbor1Pos).p.y > points.get(neighbor2Pos).p.y && focus.type == 5))) {
+          test = new Edge(points.get(originalPos), points.get(neighbor1Pos));
+          midPointY = test.midpoint().p.y;
+          midPointsArr.add(midPointY);
+          //break;
+        } else if ((points.get(neighbor1Pos).p.y > points.get(neighbor2Pos).p.y && focus.type == 4) || (points.get(neighbor1Pos).p.y < points.get(neighbor2Pos).p.y && focus.type == 5)) {
+          test = new Edge(points.get(originalPos), points.get(neighbor2Pos));
+          midPointY = test.midpoint().p.y;
+          midPointsArr.add(midPointY);
+          //break;
+        } else { // collinear, pick 1st edge
+          test = new Edge(points.get(originalPos), points.get(neighbor1Pos));
+          midPointY = test.midpoint().p.y;
+          midPointsArr.add(midPointY);
+          // break;
+        }
+       }  
       }
       
+      ArrayList<Edge> presentMidEdges = new ArrayList();
+      for (int i = 0; i < midPointsArr.size(); i++) {
+        
+        if (yHori < midPointsArr.get(i)) {
+         Point p0 = new Point(0, midPointsArr.get(i));
+         Point p1 = new Point(width, midPointsArr.get(i));
+         presentMidEdges.add(new Edge(p0, p1));
+         
+         
+         for (Edge p : presentMidEdges) {
+           stroke(255, 0, 0);
+           p.draw();
+         }
+        } else {
+          
+        }
+      }
+      fill(255);
+      ellipse(xHori-(25/2), yHori, 25, 25);
+        
+      yHori--;
+      if (yHori < 0) {
+        yHori = height; 
+      }
+      
+      textSize(32);
+      fill(0, 102, 153);
+      
+      if (poly.isYMonotone()) {
+       textRHC("YMono", 10, 30);
+      } else {
+       
+       textRHC("Not YMono", 10, 30);
+      } 
     }
     
     // show Y axis
     if (showY) {
       // Make two shapes
-      rect(x, y, 2, height);
+      rect(xVerti, yVerti, 2, height);
       fill(255);
-      ellipse(x, y-(25/2), 25, 25);
+      ellipse(xVerti, yVerti-(25/2), 25, 25);
         
       // RULER DRAG
       // y-axis line
-      x = mouseX;
-      y = height - mouseY;
+      xVerti = mouseX;
+      yVerti = height - mouseY;
       cursor(HAND);
-      
-      if (mouseX > width - 100) {
-       textSize(32);
-       fill(0, 102, 153);
-       //if (poly.isConvex()) {
-       //  textRHC("CONVEX", 10, 30); 
-       //} else {
-       //  textRHC("NOT CONVEX", 10, 30);
-       //}
-       if (poly.isXMonotone()) {
-         textRHC("XMono", 10, 30);
-       } else {
+
+      textSize(32);
+      fill(0, 102, 153);
+      if (poly.isXMonotone()) {
+        textRHC("XMono", 10, 30);
+      } else {
          
-         textRHC("Not XMono", 10, 30);
-       }
+        textRHC("Not XMono", 10, 30);
       }
+
+    }
+    
+    
+    // Animation of triangulation of one y monotone polygon
+    // ordered points (for v and v+?)
+    if (showTriangles) {
+      
+      //ArrayList<Edge> presentTriangles = new ArrayList<Edge>();
+      //ArrayList<Integer> presentOrderedPos = new ArrayList<Integer>();
+      //presentOrderedPos = poly.orderedPointsPos();
+      
+      //ArrayList<Point> presentOrderedP = new ArrayList<Point>();
+      
+      //for (int i = 0; i < points.size(); i++) {
+      //  presentOrderedP.add(new Point(points.get(presentOrderedPos.get(i)).p));
+      //}
+      
+      //presentTriangles = Triangulate();
+      int i = 0, j = 0, ii = 0, jj = 0;
+      
+      while (i < aniLoop && j < Triangulate().size()) {
+        
+        // ** current v and v+ HIGHLIGHTED
+        
+        // reflex chain
+      
+        // ** current reflex chain HIGHLIGHTED
+        
+        
+        // diagonals
+        strokeWeight(4);
+        stroke(255, 128, 0); // orange
+        Triangulate().get(j).draw();
+
+        
+        i = i + 100;
+        j++;
+      }
+      aniLoop = aniLoop + 1;
+      
+      ////while (ii < aniLoop2 && jj < presentOrderedP.size()) {
+        
+      ////  fill(0, 255, 0);
+      ////  strokeWeight(1);
+      ////  stroke(0);
+      ////  presentOrderedP.get(jj).draw();
+        
+      ////  ii += 300;
+      ////  jj++;
+        
+      ////}
+      
+      ////aniLoop2 = aniLoop2 + 1;
+      
+      
+      ////strokeWeight(4);
+      ////stroke(255, 128, 0); // orange
+      ////for ( Edge t : Triangulate()) {
+         
+      ////  t.draw();
+      ////}
     }
   }
 }
@@ -189,12 +306,26 @@ void keyPressed(){
   if( key == 'd' ) showDiagonals = !showDiagonals;
   
   // Ruler
-  if ( key == 'x' ) { showX = !showX; }
-  if ( key == 'y' ) { showY = !showY; }
+  if ( key == 'x' ) { 
+    showX = !showX; 
+    xHori = 21; yHori = height;
+    x2Hori = xHori;
+    if (showX) {showY = false;} 
+  }
+  if ( key == 'y' ) { 
+    showY = !showY; 
+    xVerti = 21; yVerti = 20;
+    y2Verti = yVerti;
+    if (showY) {showX = false;}
+  }
   
-  //Monoton Partiton
+  //Monotone Partiton
   if ( key == 'm' ) { MonotonePartition(); poly.draw(); }
+  
+  // Triangulation
+  if ( key == 't' ) { showTriangles = !showTriangles; aniLoop = 0; aniLoop2 = 0;}
 }
+
 
 
 void textRHC( int s, float x, float y ){
@@ -214,7 +345,7 @@ Point sel = null;
 
 void mousePressed(){
   
-  if (!showX && !showY) {
+  if (!showX || !showY) {
     
     int mouseXRHC = mouseX;
     int mouseYRHC = height-mouseY;
