@@ -1,17 +1,12 @@
 String[] myType = { "Collinear", "Regular", "Start", "End", "Merge", "Split" };
 
-ArrayList<Polygon> MonotonePartition(){
+LinkedList<Edge> MonotonePartition(){
   
-  //initialize the priorityQueue
-  ArrayList<Event> pq = makePQ();
-  
-  //create an active edge list that stores edges from left to right
-  EdgeList ActiveEdges = new EdgeList();
-  
-  //initialize Attention list of Events for split and merge vertices
-  ArrayList<Event> Attention = new ArrayList<Event>();
-  
-  LinkedList<Edge> splitMerge = new LinkedList<Edge>();
+  ArrayList<Event> pq            = makePQ(); //initialize the priorityQueue
+  ArrayList<Event> Attention     = new ArrayList<Event>(); //initialize Attention list of Events for split and merge vertices
+  ArrayList<Polygon> subPolygons;
+  EdgeList ActiveEdges           = new EdgeList(); //create an active edge list that stores edges from left to right
+  LinkedList<Edge> splitMerge    = new LinkedList<Edge>();
   
   for(int i = 0; i < pq.size(); i++){
     
@@ -108,13 +103,14 @@ ArrayList<Polygon> MonotonePartition(){
     }
   }
   
-  /*
-  println("Polygon is now Y-Monotone");
-  if(splitMerge.size() > 0);
-      return Partition(splitMerge);
   
-  */
-  return null;
+    println("Polygon is now Y-Monotone");
+    /* FIX MEEEEE
+    if(splitMerge.size() > 0)
+      return Partition(splitMerge);
+    */
+    return splitMerge;
+  //FIXMEEEE return null;
 } 
 
 ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
@@ -122,6 +118,7 @@ ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
   if (diagList.size() == 0) { return null; }
   
   ArrayList<Polygon>  subPolygons = new ArrayList<Polygon>();
+  ArrayList<Point> stack = new ArrayList<Point>();
   ArrayList<Point>    newCycle;
   Point               curr;
   
@@ -129,15 +126,15 @@ ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
     create a directed graph
   */
   dG = new DirectedGraph(poly.p, diagList);
+  println("Directed graph initialized");
   state = 1;
-  
-  ArrayList<Point> stack = new ArrayList<Point>();
   
   //this may create duplicates in the stack
   for (Edge e : diagList){
     stack.add(e.p0);
     stack.add(e.p1);
   }
+  
   
   while ( stack.size() != 0 ){
     
@@ -265,6 +262,9 @@ Point getCcwNeighbor(Point a, LinkedList<Point> neighbors){
   int minIndex = 0;
   
   for (int i = 1; i < angles.length; i++){
+    if (angles[minIndex] == 0){
+      continue;
+    }
     if (angles[minIndex] > angles[i]){
       minIndex = i;
     }
@@ -380,6 +380,7 @@ ArrayList<Event> makePQ() {
   // TEST PRINT RUN
   for (int i = 0; i < pQueue.size(); i++) {
    Event e = pQueue.get(i);
+   
    println(e.label+1 + ": " + "Point: " + e.P.toString() + "       " + myType[e.type]);
   }
   println();
