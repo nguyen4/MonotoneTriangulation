@@ -36,10 +36,10 @@ class DirectedGraph {
       a = diag.get(i).p0;
       b = diag.get(i).p1;
       for (int j = 0; j < adjList.size(); j++){
-        if (a.equals(adjList.get(j).get(0))){
+        if (a.equals( adjList.get(j).get(0))){
           adjList.get(j).add(b);
         }
-        else if (b.equals(adjList.get(j).get(0))){
+        else if (b.equals( adjList.get(j).get(0)) ){
           adjList.get(j).add(a);
         }
       }
@@ -85,6 +85,21 @@ class DirectedGraph {
        if (adjList.get(i).size() <= 1){
          adjList.remove(i);
        }
+     }
+   }
+   
+   void printDirectedGraph() {
+     
+     for (int i = 0; i < adjList.size(); i++){
+       if (adjList != null){
+         print((i+1));
+       }
+       for (int j = 1; j < adjList.get(i).size(); j++){
+         if (adjList.get(i) != null){
+           print("->" + (j+1));
+         }
+       }
+       println();
      }
    }
 }

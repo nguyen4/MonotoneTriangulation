@@ -8,25 +8,31 @@ LinkedList<Edge> MonotonePartition(){
   EdgeList ActiveEdges           = new EdgeList(); //create an active edge list that stores edges from left to right
   LinkedList<Edge> splitMerge    = new LinkedList<Edge>();
   
+  println("Starting Monotone Partition");
   for(int i = 0; i < pq.size(); i++){
     
     int type = pq.get(i).type;
     Event curr = pq.get(i);
+  
+    println("Iteration: " + i + " Current pq element: " + (curr.label + 1));
     
     if (type == 2)        // if start vertex
     {
+      println("Start: adding both edges");
       // add both of its edges to the edge list
       for (Edge e : curr.edges){ ActiveEdges.addEdge(e); }
     }
      
     else if (type == 3)   // else if end vertex
     {
+      println("End: Removing both edges");
       // rm both of its edges from the edge list
       for (Edge e: curr.edges){ ActiveEdges.removeEdge(e); }
     }
      
     else if (type == 1)   // else if reg vertex
     {
+      println("Regular: removing top, adding bottom edge");
       try {
         // rm edge above vertex and add edge below it to edge list
         Point edge1_EndPoint = curr.edges.get(0).p0;
@@ -62,7 +68,7 @@ LinkedList<Edge> MonotonePartition(){
     
     else if (type == 4) //else if merge
     {
-      println("Found merge");
+      println("Merge: removing both edges");
       //remove both of its edges of merge vertex from ActiveEdges list add the event to the Attention list
       for (Edge e : curr.edges) { ActiveEdges.removeEdge(e); }
       Attention.add(curr);
@@ -70,16 +76,20 @@ LinkedList<Edge> MonotonePartition(){
     
     else if (type == 5) // else if split
     {
-      println("Found split");
+      println("Split: adding both edges");
       //add both of its edges to the ActiveEdges list and add event to Attention list
       for (Edge e : curr.edges) { ActiveEdges.addEdge(e); }
       Attention.add(curr);
     }
     
     ActiveEdges.quickSort(curr.P.getY());
-    
-    for (int j = 0; j < Attention.size(); j++)
+    int j = 0;
+    while ( j < Attention.size())
     {
+      println("ATTENTION LIST: ");
+      for (Event e: Attention){
+        e.Print();
+      }
       if (Attention.get(j).type == 4){
         println("Handling merge");
         Edge newEdge = merge_Helper(curr, Attention.get(j));
@@ -88,18 +98,22 @@ LinkedList<Edge> MonotonePartition(){
           splitMerge.add(newEdge);
           Attention.remove(j);
           println("found a new diag for merge");
+          continue;
+          
         }
       }
       else if (Attention.get(j).type == 5){
         println("Handling split");
-        Edge newEdge = split_Helper(j, pq, Attention.get(j));
+        Edge newEdge = split_Helper(i, pq, Attention.get(j));
         if (newEdge != null){
           //poly.bdry.add(newEdge);
           splitMerge.add(newEdge);
           Attention.remove(j);
           println("found a new diag for split");
+          continue;
         }
       }
+      j++;
     }
   }
   
@@ -118,16 +132,25 @@ ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
   if (diagList.size() == 0) { return null; }
   
   ArrayList<Polygon>  subPolygons = new ArrayList<Polygon>();
-  ArrayList<Point> stack = new ArrayList<Point>();
+  ArrayList<Point>    stack       = new ArrayList<Point>();
   ArrayList<Point>    newCycle;
   Point               curr;
   
   /*
     create a directed graph
   */
+  //remove duplicate edges from diagList
+  for (int i = 0; i < diagList.size(); i++){
+    for (int j = i + 1; j < diagList.size(); j++){
+      if (diagList.get(i).sameEdge(diagList.get(j))){
+        diagList.remove(j);
+      }
+    }
+  }
   dG = new DirectedGraph(poly.p, diagList);
   println("Directed graph initialized");
   state = 1;
+  dG.printDirectedGraph();
   
   //this may create duplicates in the stack
   for (Edge e : diagList){
@@ -135,9 +158,9 @@ ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
     stack.add(e.p1);
   }
   
-  
   while ( stack.size() != 0 ){
     
+    println("Size of Directed Graph: " + dG.adjList.size());
     if ( !dG.exists( stack.get(0) ) ){
       
       stack.remove(0);
@@ -183,7 +206,7 @@ ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
       }
       
       subPolygons.add(subPoly);
-      
+      println("created " + subPolygons.size() + " polygons");
     }
     
   }
@@ -221,7 +244,6 @@ ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
          if p in DG is empty, remove from DG
          
        add new polygon to list of polygon
-      
   
   */
   
@@ -288,11 +310,13 @@ Edge merge_Helper(Event current, Event merge) {
 Edge split_Helper(int i, ArrayList<Event> pq, Event split) {
   
   Edge newEdge;
+  
   for (int j = i - 1; j >= 0; j--)
   {
     println("going up 1");
+    println("Position in pq: " + j);
     newEdge = new Edge(  split.P, pq.get(j).P );
-    println("made an edge between " + split.label + " and " + pq.get(j).label);
+    println("made an edge between " + (split.label + 1) + " and " + (pq.get(j).label + 1));
     if (!poly.edgeExists( newEdge )) {
       println("Edge doesnt exist in polygon");
       if (isDiagonal(newEdge)) {

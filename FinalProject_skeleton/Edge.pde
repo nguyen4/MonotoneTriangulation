@@ -91,6 +91,15 @@ class Edge{
   
   }
   
+  boolean sameEdge(Edge e) {
+    
+    if (p0.equals(e.p0) && p1.equals(e.p1) ||
+        p0.equals(e.p1) && p1.equals(e.p0)) {
+          return true;
+        }
+    return false;
+  }
+  
   void Print(){
     println("Neighbor vertex 1: " + p0.toString());
     println("Neighbor vertex 2: " + p1.toString());

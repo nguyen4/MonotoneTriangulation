@@ -11,4 +11,8 @@ class Event {
     this.type = type;
     this.label = label;
   }
+  
+  void Print(){
+    println("Point: " + P + " Type: " + type + " Label: " + label);
+  }
 }
