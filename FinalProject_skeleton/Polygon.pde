@@ -342,7 +342,7 @@ class Polygon {
      for (int i = 0; i < orderedPoints.size(); i++) {
       //println(i + ": * " + points.get(i).p.y); 
       //println(i + ":   " + orderedPoints.get(i).p.y);
-      println(i + ": & " + (orderedPointPos.get(i)+1));
+      println(i + ": & " + (orderedPointPos.get(i)+1) + "  " + points.get(orderedPointPos.get(i)).p.x + "    " + points.get(orderedPointPos.get(i)).p.y);
      }
      return orderedPointPos;
    } 

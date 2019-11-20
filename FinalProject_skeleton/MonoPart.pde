@@ -393,7 +393,7 @@ ArrayList<Event> makePQ() {
    }
    
    //FIND TYPE OF VERTEX
-   type = findVertexType(orderedPoints, originalPos);
+   type = findVertexType(originalPos);
    
    //CREATE NEW EVENT AND ADD TO QUEUE
    Event e = new Event(currPoint, edges.get(0), edges.get(1), type, originalPos);
@@ -413,7 +413,7 @@ ArrayList<Event> makePQ() {
   
 }
 
-int findVertexType(ArrayList<Integer> orderedPoints, int originalPos) {    
+int findVertexType(int originalPos) {    
   
   int neighbor1Pos;
   
