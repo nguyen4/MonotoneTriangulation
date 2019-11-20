@@ -335,7 +335,7 @@ boolean isDiagonal(Edge diag){
      
     //check if edge does not interesect a bdry
     for (int j = 0; j < bdry.size(); j++){
-      println("Intersection test " + (j+1));
+      // println("Intersection test " + (j+1));
       //if it intersects the boundary
       
       //if the endpoints of the boundary and ray matches, skip
@@ -405,9 +405,9 @@ ArrayList<Event> makePQ() {
   for (int i = 0; i < pQueue.size(); i++) {
    Event e = pQueue.get(i);
    
-   println(e.label+1 + ": " + "Point: " + e.P.toString() + "       " + myType[e.type]);
+   // println(e.label+1 + ": " + "Point: " + e.P.toString() + "       " + myType[e.type]);
   }
-  println();
+  // println();
   
   return pQueue;
   
@@ -418,7 +418,6 @@ int findVertexType(int originalPos) {
   int neighbor1Pos;
   
   // get current point's 1st neighbor
-  // HAVING PROBLEMS CAN YOU FIGURE OUT HOW TO 
   if (originalPos == 0) {
    neighbor1Pos = points.size() - 1; 
   } else {

@@ -8,6 +8,7 @@ class Edge{
    
    
    void draw(){
+     fill(255);
      line( p0.p.x, p0.p.y, 
            p1.p.x, p1.p.y );
    }

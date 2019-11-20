@@ -92,14 +92,14 @@ class DirectedGraph {
      
      for (int i = 0; i < adjList.size(); i++){
        if (adjList != null){
-         print((i+1));
+         // print((i+1));
        }
        for (int j = 1; j < adjList.get(i).size(); j++){
          if (adjList.get(i) != null){
-           print("->" + (j+1));
+           // print("->" + (j+1));
          }
        }
-       println();
+       // println();
      }
    }
 }

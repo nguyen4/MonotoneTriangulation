@@ -13,6 +13,7 @@ class Point {
    }
    
    public void draw(){
+     // fill(255);
      ellipse( p.x,p.y, 10,10);
    }
    

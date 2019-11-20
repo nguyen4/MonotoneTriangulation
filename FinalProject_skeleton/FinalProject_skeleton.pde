@@ -25,9 +25,17 @@ boolean showDiagonals = false;
 
 // ANIMATION
 boolean showX = false, showY = false;
-boolean showTriangles = false;
 boolean showTrianglesAni = false;
-int aniLoop = 0, aniLoop2 = 0;
+boolean showTrapAni = false;
+int aniLoop = 0;
+
+// Trapezoidation animation array
+ArrayList<Event> pqPresentX = new ArrayList<Event>();
+ArrayList<Edge> presentTriangles = new ArrayList<Edge>();
+ArrayList<Integer> presentOrderedPos = new ArrayList<Integer>();
+
+// Triangulation animation array
+// ArrayList<Float> midPointsArr = new ArrayList();
 
 void setup(){
   size(800,800,P3D);
@@ -61,23 +69,23 @@ void keyPressed(){
     showX = !showX; 
     xHori = 21; yHori = height;
     x2Hori = xHori;
-    if (showX) {showY = false;} 
+    if (showX) {showY = false; showTrapAni = false; showTrianglesAni = false; } 
   }
   if ( key == 'y' ) { 
     showY = !showY; 
     xVerti = 21; yVerti = 20;
     y2Verti = yVerti;
-    if (showY) {showX = false;}
+    if (showY) {showX = false; showTrapAni = false; showTrianglesAni = false; }
   }
   
   //Monotone Partition
-  if ( key == 'm' ) { monoPart(); }
+  if ( key == 'm' ) { monoPart(); showTrapAni = !showTrapAni; aniLoop = 0; if (showTrapAni) { showY = false; showX = false; showTrianglesAni = false;  }}
   if ( key == 'n' && subPolygons != null && i < subPolygons.size() - 1 ){
     i++;
   }
   
   // Triangulation
-  if ( key == 't' ) { showTriangles = !showTriangles; aniLoop = 0; aniLoop2 = 0;}
+  if ( key == 't' ) { showTrianglesAni = !showTrianglesAni; aniLoop = 0; if (showTrianglesAni) { showY = false; showX = false; showTrapAni = false; }}
    
 }
 
@@ -93,6 +101,7 @@ void textRHC( String s, float x, float y ){
   scale(1,-1,1);
   text( s, 0, 0 );
   popMatrix();
+  fill(255);
 }
 
 Point sel = null;
@@ -141,6 +150,7 @@ void mouseReleased(){
 
 void monoPart(){
    if (!poly.isSimple()){
+     fill(255);
      message = "PLEASE MAKE A SIMPLE POLYGON";
      return;
    }
@@ -154,7 +164,7 @@ void monoPart(){
 }
 
 void home(){
-  background(255);
+  background(0);
   
   translate( 0, height, 0);
   scale( 1, -1, 1 );
@@ -187,131 +197,80 @@ void home(){
     }
   }
   
-  //// show triangulation
-  //if( showTriangles ){
-  // strokeWeight(4);
-  // stroke(255, 128, 0); // orange
-  // for ( Edge t : Triangulate()) {
-     
-  //   t.draw();
-  // }
-  //}
-  
-  fill(0);
+  fill(255);
   stroke(0);
   textSize(18);
   
   // LABELS
   textRHC( "Controls", 10, height-20 );
-  textRHC( "d: Show/Hide Diagonals", 10, height-40 );
-  textRHC( "p: Show/Hide Potential Diagonals", 10, height-60 );
+  // NOT NEEDED
+  //textRHC( "d: Show/Hide Diagonals", 10, height-40 );
+  //textRHC( "p: Show/Hide Potential Diagonals", 10, height-60 );
+  
+  // Notify user if function is in use by changing font color of showX label
+  if (showX) { fill(255, 0, 0); } else { fill(255); }
+  textRHC( "x: X-Axis Sweep", 10, height-40);
+  
+  // Notify user if function is in use by changing font color of showY label
+  fill(255);
+  if (showY) { fill(255, 0, 0); } else { fill(255); }
+  textRHC( "y: Y-Axis Sweep", 10, height-60);
+  
+  
   textRHC( "c: Clear Polygon", 10, height-80 );
   textRHC( "s: Save Image", 10, height-100 );
+  
+  if (showTrapAni) { fill(255, 0, 0); } else { fill(255); }
   textRHC( "m: Monotone Partition", 10, height-120 );
+  fill(255);
+  if (showTrianglesAni) { fill(255, 0, 0); } else { fill(255); }
+  textRHC( "t: Triangulation", 10, height-140);
   
 
   textRHC( "Clockwise: " + (poly.cw()?"True":"False"), 550, 80 );
   textRHC( "Counterclockwise: " + (poly.ccw()?"True":"False"), 550, 60 );
   textRHC( "Closed Boundary: " + (poly.isClosed()?"True":"False"), 550, 40 );
   textRHC( "Simple Boundary: " + (poly.isSimple()?"True":"False"), 550, 20 );
-//<<<<<<< HEAD
+  
   
   // MESSAGES
   if (message != null)
     textRHC( message, width/2, height-120 );
   
-//  if (showX) {
-    
-//  }
-////=======
-
-  if (showX) { fill(255, 0, 0); } else { noFill(); }
-////>>>>>>> local
-  textRHC( "x: X-Axis Sweep", 10, 80);
-  
-//<<<<<<< HEAD
-  if (state == 0){
+  // Point Labels
+  //if (state == 0){
     for( int i = 0; i < points.size(); i++ ){
+      fill(255);
       textRHC( i+1, points.get(i).p.x+5, points.get(i).p.y+15 );
     }
-  }
-////=======
-  fill(0,0,0);
-  if (showY) { fill(255, 0, 0); } 
-  textRHC( "y: Y-Axis Sweep", 10, 60);
-////  for( int i = 0; i < points.size(); i++ ){
-////    textRHC( i+1, points.get(i).p.x+5, points.get(i).p.y+15 );
-//////>>>>>>> local
-////  }
+  //}
+
   if( saveImage ) saveFrame( ); 
   saveImage = false;
   
-  // ANIMATION
+  // *********************************************************ANIMATION************************************************************************
   if (poly.isClosed()) {
+    
+    pqPresentX = makePQ();
+    presentOrderedPos = poly.orderedPointsPos();
     
     // show X axis
     if (showX) {
-      ArrayList<Event> pqPresentX = makePQ();
       ArrayList<Float> midPointsArr = new ArrayList();
+      
       // Make two shapes
+      // line sweep
+      fill(255);
+      stroke(0,0,255);
       rect(xHori, yHori, width, 2);
       
-      Event focus;
-      int neighbor1Pos, originalPos, neighbor2Pos;
-      Edge test;
-      float midPointY = -1;
+      // Animation triangulation function
+      aniMonoY(midPointsArr);
       
       
-      for (int i = 0; i < pqPresentX.size(); i++) {
-       focus = pqPresentX.get(i);
-       if (focus.type == 4 || focus.type == 5) {
-        originalPos = focus.label;
-        if (originalPos == 0) {
-         neighbor1Pos = points.size() - 1; 
-        } else {
-         neighbor1Pos = (originalPos - 1) % points.size();
-        }
-  
-        // get current point's 2nd neighbor
-        neighbor2Pos = (originalPos + 1) % points.size();
-        
-        if ((points.get(neighbor1Pos).p.y < points.get(neighbor2Pos).p.y && focus.type == 4) || ((points.get(neighbor1Pos).p.y > points.get(neighbor2Pos).p.y && focus.type == 5))) {
-          test = new Edge(points.get(originalPos), points.get(neighbor1Pos));
-          midPointY = test.midpoint().p.y;
-          midPointsArr.add(midPointY);
-          //break;
-        } else if ((points.get(neighbor1Pos).p.y > points.get(neighbor2Pos).p.y && focus.type == 4) || (points.get(neighbor1Pos).p.y < points.get(neighbor2Pos).p.y && focus.type == 5)) {
-          test = new Edge(points.get(originalPos), points.get(neighbor2Pos));
-          midPointY = test.midpoint().p.y;
-          midPointsArr.add(midPointY);
-          //break;
-        } else { // collinear, pick 1st edge
-          test = new Edge(points.get(originalPos), points.get(neighbor1Pos));
-          midPointY = test.midpoint().p.y;
-          midPointsArr.add(midPointY);
-          // break;
-        }
-       }  
-      }
-      
-      ArrayList<Edge> presentMidEdges = new ArrayList();
-      for (int i = 0; i < midPointsArr.size(); i++) {
-        
-        if (yHori < midPointsArr.get(i)) {
-         Point p0 = new Point(0, midPointsArr.get(i));
-         Point p1 = new Point(width, midPointsArr.get(i));
-         presentMidEdges.add(new Edge(p0, p1));
-         
-         
-         for (Edge p : presentMidEdges) {
-           stroke(255, 0, 0);
-           p.draw();
-         }
-        } else {
-          
-        }
-      }
+      // ellipse attached to line sweep
       fill(255);
+      stroke(0,0,255);
       ellipse(xHori-(25/2), yHori, 25, 25);
         
       yHori--;
@@ -333,6 +292,8 @@ void home(){
     // show Y axis
     if (showY) {
       // Make two shapes
+      fill(255);
+      stroke(0,0,255);
       rect(xVerti, yVerti, 2, height);
       fill(255);
       ellipse(xVerti, yVerti-(25/2), 25, 25);
@@ -357,29 +318,18 @@ void home(){
     
      // Animation of triangulation of one y monotone polygon
      // ordered points (for v and v+?)
-    if (showTriangles) {
+    if (showTrianglesAni) {
+  
+      ArrayList<Point> presentOrderedP = new ArrayList<Point>();
       
-      //ArrayList<Edge> presentTriangles = new ArrayList<Edge>();
-      //ArrayList<Integer> presentOrderedPos = new ArrayList<Integer>();
-      //presentOrderedPos = poly.orderedPointsPos();
-      
-      //ArrayList<Point> presentOrderedP = new ArrayList<Point>();
-      
-      //for (int i = 0; i < points.size(); i++) {
-      //  presentOrderedP.add(new Point(points.get(presentOrderedPos.get(i)).p));
-      //}
+      for (int i = 0; i < points.size(); i++) {
+        presentOrderedP.add(new Point(points.get(presentOrderedPos.get(i)).p));
+      }
       
       //presentTriangles = Triangulate();
       int i = 0, j = 0, ii = 0, jj = 0;
       
       while (i < aniLoop && j < Triangulate().size()) {
-        
-        // ** current v and v+ HIGHLIGHTED
-        
-        // reflex chain
-      
-        // ** current reflex chain HIGHLIGHTED
-        
         
         // diagonals
         strokeWeight(4);
@@ -391,43 +341,37 @@ void home(){
         j++;
       }
       aniLoop = aniLoop + 1;
+    }
+    
+    
+    // Animation of trapezoidation
+    if (showTrapAni) {
+      Point curr = new Point(0.0,0.0);
+      int type = 0;
       
-      ////while (ii < aniLoop2 && jj < presentOrderedP.size()) {
+      int i = 0, j = 0;
+      while (i < aniLoop && j < points.size()) {
         
-      ////  fill(0, 255, 0);
-      ////  strokeWeight(1);
-      ////  stroke(0);
-      ////  presentOrderedP.get(jj).draw();
+        aniTrapezoidation(curr, type, j);
         
-      ////  ii += 300;
-      ////  jj++;
-        
-      ////}
-      
-      ////aniLoop2 = aniLoop2 + 1;
-      
-      
-      ////strokeWeight(4);
-      ////stroke(255, 128, 0); // orange
-      ////for ( Edge t : Triangulate()) {
-         
-      ////  t.draw();
-      ////}
+        i = i + 100;
+        j++;
+      }
+      aniLoop = aniLoop + 1;
     }
     
   }
 }
 
-
-//<<<<<<< HEAD
 void showHomeView(){
   fill(0);
     noStroke();
     for( Point p : points ){
+      fill(255);
       p.draw();
     }
     
-    noFill();
+    // noFill();
     stroke(100);
     for( Edge e : edges ){
       e.draw();
@@ -461,71 +405,24 @@ void showHomeView(){
 void showBeforeMonotonePartition() {
   noStroke();
     for( Point p : poly.p ){
+      fill(255);
       p.draw();
     }
-
-////=======
-
-//void keyPressed(){
-//  if( key == 's' ) saveImage = true;
-//  if( key == 'c' ){ points.clear(); poly = new Polygon(); }
-//  if( key == 'p' ) showPotentialDiagonals = !showPotentialDiagonals;
-//  if( key == 'd' ) showDiagonals = !showDiagonals;
-  
-//  // Ruler
-//  if ( key == 'x' ) { 
-//    showX = !showX; 
-//    xHori = 21; yHori = height;
-//    x2Hori = xHori;
-//    if (showX) {showY = false;} 
-//  }
-//  if ( key == 'y' ) { 
-//    showY = !showY; 
-//    xVerti = 21; yVerti = 20;
-//    y2Verti = yVerti;
-//    if (showY) {showX = false;}
-//  }
-  
-//  //Monotone Partiton
-//  if ( key == 'm' ) { MonotonePartition(); poly.draw(); }
-  
-//  // Triangulation
-//  if ( key == 't' ) { showTriangles = !showTriangles; aniLoop = 0; aniLoop2 = 0;}
-//}
-
-
-
-//void textRHC( int s, float x, float y ){
-//  textRHC( Integer.toString(s), x, y );
-//}
-
-
-//void textRHC( String s, float x, float y ){
-//  pushMatrix();
-//  translate(x,y);
-//  scale(1,-1,1);
-//  text( s, 0, 0 );
-//  popMatrix();
-//}
-
-//Point sel = null;
-
-//void mousePressed(){
-  
-//  if (!showX || !showY) {
-//>>>>>>> local
+    //
     
     noFill();
     stroke(100);
     for( Edge e : poly.bdry ){
+      fill(255);
       e.draw();
     }
     
-    noFill();
-    stroke(100);
-    for( Edge e : newEdges ){
-      e.draw();
-    }
+    //noFill();
+    //stroke(100);
+    //for( Edge e : newEdges ){
+    //  fill(255);
+    //  e.draw();
+    //}
     
     noStroke();
     for( Triangle t : triangles ){
@@ -537,7 +434,8 @@ void showBeforeMonotonePartition() {
 }
 void showAfterMonotonePartition() {
   for (int j = 0; j < subPolygons.size(); j++){
-      fill(0);
+      // fill(0);
+      fill(255);
       noStroke();
       for( Point p : subPolygons.get(j).p ){
         p.draw();
