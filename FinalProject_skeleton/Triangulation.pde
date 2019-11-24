@@ -1,4 +1,4 @@
-ArrayList<Edge> Triangulate() {
+ArrayList<Edge> Triangulate(Polygon poly) {
   
   // Triangulations 
   ArrayList<Edge> diagonals = new ArrayList<Edge>();
@@ -8,12 +8,12 @@ ArrayList<Edge> Triangulate() {
     
     // Ordered V's (top to bottom)
     ArrayList<Integer> orderedPoints = new ArrayList<Integer>();
-    orderedPoints = poly.orderedPointsPos();
+    orderedPoints = poly.orderedPointsPos(poly.p);
     
     // create copy of points to simulate polygon after ear cutting
     ArrayList<Point> pointsCopy = new ArrayList<Point>();
-    for (int a = 0; a < points.size(); a++) {
-      pointsCopy.add(new Point(points.get(a).p.x, points.get(a).p.y));  
+    for (int a = 0; a < poly.p.size(); a++) {
+      pointsCopy.add(new Point(poly.p.get(a).p.x, poly.p.get(a).p.y));  
     }
     
     // Index and point of V and V+
@@ -35,7 +35,7 @@ ArrayList<Edge> Triangulate() {
     for (int i = 0; i < orderedPoints.size()-1; i++) {
      // Store V
      originalPosV = orderedPoints.get(i);
-     v = points.get(originalPosV); 
+     v = poly.p.get(originalPosV); 
       
      // Store V+ (appropriately)
      if (i == 0) {
@@ -45,7 +45,7 @@ ArrayList<Edge> Triangulate() {
      }
      
      // Store V+ after getting appropriate index
-     vPlus = points.get(originalPosVPlus);
+     vPlus = poly.p.get(originalPosVPlus);
      int neighbor1Pos, neighbor2Pos;
     
      
@@ -58,15 +58,15 @@ ArrayList<Edge> Triangulate() {
      if (i >= 2) {
        // case 1 -- check if v is opposite reflex chain
        // (compare v with last added v in chain)
-       if ((originalPosV+1)%points.size() != (reflexChain.get(reflexChain.size()-1)) && originalPosV != ((reflexChain.get(reflexChain.size()-1))+ 1)%points.size()) {
+       if ((originalPosV+1)%poly.p.size() != (reflexChain.get(reflexChain.size()-1)) && originalPosV != ((reflexChain.get(reflexChain.size()-1))+ 1)%poly.p.size()) {
          
          while (reflexChain.size() > 1) {
            
            // store second from top point in vertex
-           secondFromTopP = new Point(points.get(reflexChain.get(1)).p);
+           secondFromTopP = new Point(poly.p.get(reflexChain.get(1)).p);
            
            // * create diagonal from v to second vertex from top of chain
-           if ((originalPosV+1)%points.size() != (reflexChain.get(1)) && originalPosV != ((reflexChain.get(1))+ 1)%points.size()) {
+           if ((originalPosV+1)%poly.p.size() != (reflexChain.get(1)) && originalPosV != ((reflexChain.get(1))+ 1)%poly.p.size()) {
              diagonals.add(new Edge(v, secondFromTopP));
              
            }
@@ -74,9 +74,9 @@ ArrayList<Edge> Triangulate() {
            // ** adjust copyPoints (simulate ear clipping)
            if (reflexChain.size() > 0) {
              if (originalPosV == 0) {
-               pointsCopy.set((points.size() - 1), points.get(reflexChain.get(1)));
+               pointsCopy.set((poly.p.size() - 1), poly.p.get(reflexChain.get(1)));
              } else {
-               pointsCopy.set((originalPosV - 1), points.get(reflexChain.get(1)));
+               pointsCopy.set((originalPosV - 1), poly.p.get(reflexChain.get(1)));
              }
            }
            
@@ -90,31 +90,31 @@ ArrayList<Edge> Triangulate() {
        }
        
        // case 2 and 3 
-       if ((originalPosV+1)%points.size() == (reflexChain.get(reflexChain.size()-1)) ||  originalPosV == ((reflexChain.get(reflexChain.size()-1))+ 1)%points.size()) {
+       if ((originalPosV+1)%poly.p.size() == (reflexChain.get(reflexChain.size()-1)) ||  originalPosV == ((reflexChain.get(reflexChain.size()-1))+ 1)%poly.p.size()) {
   
          //// need to check for STRICT CONVEXITY
          //// check if v+ is convex -------------------------------------------------------------------------------------------------------------------------------------------------------------
          
          if (originalPosVPlus == 0) {
-          neighbor1Pos = points.size() - 1; 
+          neighbor1Pos = poly.p.size() - 1; 
          } else {
-          neighbor1Pos = (originalPosVPlus - 1) % points.size();
+          neighbor1Pos = (originalPosVPlus - 1) % poly.p.size();
          }
           
          // get current point's 2nd neighbor
-         neighbor2Pos = (originalPosVPlus + 1) % points.size();
+         neighbor2Pos = (originalPosVPlus + 1) % poly.p.size();
          
-         testVPlus = new Triangle(pointsCopy.get(neighbor1Pos), vPlus, points.get(neighbor2Pos)); 
+         testVPlus = new Triangle(pointsCopy.get(neighbor1Pos), vPlus, poly.p.get(neighbor2Pos)); 
          
          // case 2 -- check if v is adjacent to bottom of reflex chain and v+ is strictly convex
          // if triangle is ccw in ccw polygon, it is convex
          if (testVPlus.ccw()) {
          
            // store second from bottom 
-           secondFromBottomP = new Point(points.get(reflexChain.get(reflexChain.size()-2)).p);
+           secondFromBottomP = new Point(poly.p.get(reflexChain.get(reflexChain.size()-2)).p);
            
            // * draw diagonal from v to second vertex
-           if ((originalPosV+1)%points.size() != (reflexChain.get(reflexChain.size()-2)) && originalPosV != ((reflexChain.get(reflexChain.size()-2))+ 1)%points.size()) {
+           if ((originalPosV+1)%poly.p.size() != (reflexChain.get(reflexChain.size()-2)) && originalPosV != ((reflexChain.get(reflexChain.size()-2))+ 1)%poly.p.size()) {
              diagonals.add(new Edge(v, secondFromBottomP));
               
            }
@@ -123,9 +123,9 @@ ArrayList<Edge> Triangulate() {
            // ** adjust copyPoints (simulate ear clipping)
            if (reflexChain.size() > 1) {
              if (originalPosV == 0) {
-               pointsCopy.set((points.size() - 1), points.get(reflexChain.get(reflexChain.size()-2)));
+               pointsCopy.set((poly.p.size() - 1), poly.p.get(reflexChain.get(reflexChain.size()-2)));
              } else {
-               pointsCopy.set((originalPosV - 1), points.get(reflexChain.get(reflexChain.size()-2)));
+               pointsCopy.set((originalPosV - 1), poly.p.get(reflexChain.get(reflexChain.size()-2)));
              }
            }
            
@@ -156,15 +156,15 @@ ArrayList<Edge> Triangulate() {
     
     // Last vertex is special case, connect to all in chain
     originalPosV = orderedPoints.get(orderedPoints.size()-1);
-    v = points.get(originalPosV);
+    v = poly.p.get(originalPosV);
     
     // Connect all points until chain has 1 left
     while (reflexChain.size() > 1) {
       // Avoid connecting to adjacent edges
-      if ((originalPosV+1)%points.size() == (reflexChain.get(0)) || originalPosV == ((reflexChain.get(0))+ 1)%points.size()) {
+      if ((originalPosV+1)%poly.p.size() == (reflexChain.get(0)) || originalPosV == ((reflexChain.get(0))+ 1)%poly.p.size()) {
         
       } else {
-        diagonals.add(new Edge(v, new Point(points.get(reflexChain.get(0)).p)));
+        diagonals.add(new Edge(v, new Point(poly.p.get(reflexChain.get(0)).p)));
       }
       
       // remove top in chain

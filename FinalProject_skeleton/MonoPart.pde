@@ -373,7 +373,7 @@ ArrayList<Event> makePQ() {
   int type;
   Point currPoint;
   
-  orderedPoints = poly.orderedPointsPos();
+  orderedPoints = poly.orderedPointsPos(poly.p);
   
   for (int i = 0; i < orderedPoints.size(); i++) {
    int originalPos = orderedPoints.get(i);

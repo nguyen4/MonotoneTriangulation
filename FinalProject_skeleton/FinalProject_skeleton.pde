@@ -27,6 +27,7 @@ boolean showDiagonals = false;
 boolean showX = false, showY = false;
 boolean showTrianglesAni = false;
 boolean showTrapAni = false;
+boolean showSubPoly = false;
 int aniLoop = 0;
 
 // Trapezoidation animation array
@@ -80,8 +81,10 @@ void keyPressed(){
   
   //Monotone Partition
   if ( key == 'm' ) { monoPart(); showTrapAni = !showTrapAni; aniLoop = 0; if (showTrapAni) { showY = false; showX = false; showTrianglesAni = false;  }}
-  if ( key == 'n' && subPolygons != null && i < subPolygons.size() - 1 ){
-    i++;
+  if ( key == 'n' && subPolygons != null /* && i < subPolygons.size() - 1 */ ){
+    // i++;
+    
+    showSubPoly = !showSubPoly;
   }
   
   // Triangulation
@@ -156,7 +159,7 @@ void monoPart(){
    }
     newEdges = MonotonePartition();
     subPolygons = Partition(newEdges);
-    state = 1;
+    // state = 1;
     if (subPolygons != null ){
       i = 0;
     }
@@ -177,6 +180,7 @@ void home(){
   
   if (state == 1){
     showBeforeMonotonePartition();
+    // showAfterMonotonePartition();
   }
   
   
@@ -238,12 +242,12 @@ void home(){
     textRHC( message, width/2, height-120 );
   
   // Point Labels
-  //if (state == 0){
+  // if (state == 0){
     for( int i = 0; i < points.size(); i++ ){
       fill(255);
       textRHC( i+1, points.get(i).p.x+5, points.get(i).p.y+15 );
     }
-  //}
+  // }
 
   if( saveImage ) saveFrame( ); 
   saveImage = false;
@@ -252,7 +256,7 @@ void home(){
   if (poly.isClosed()) {
     
     pqPresentX = makePQ();
-    presentOrderedPos = poly.orderedPointsPos();
+    presentOrderedPos = poly.orderedPointsPos(points);
     
     // show X axis
     if (showX) {
@@ -319,28 +323,61 @@ void home(){
      // Animation of triangulation of one y monotone polygon
      // ordered points (for v and v+?)
     if (showTrianglesAni) {
+      
+      // if original polygon is already y monotone
+      if (poly.isYMonotone()) {
+        //ArrayList<Point> presentOrderedP = new ArrayList<Point>();
+        
+        //for (int i = 0; i < points.size(); i++) {
+        //  presentOrderedP.add(new Point(points.get(presentOrderedPos.get(i)).p));
+        //}
+        
+        //presentTriangles = Triangulate();
+        int i = 0, j = 0;
+        
+        while (i < aniLoop && j < Triangulate(poly).size()) {
+          
+          // diagonals
+          strokeWeight(4);
+          stroke(255, 128, 0); // orange
+          Triangulate(poly).get(j).draw();
   
-      ArrayList<Point> presentOrderedP = new ArrayList<Point>();
-      
-      for (int i = 0; i < points.size(); i++) {
-        presentOrderedP.add(new Point(points.get(presentOrderedPos.get(i)).p));
-      }
-      
-      //presentTriangles = Triangulate();
-      int i = 0, j = 0, ii = 0, jj = 0;
-      
-      while (i < aniLoop && j < Triangulate().size()) {
+          
+          i = i + 100;
+          j++;
+        }
+        aniLoop = aniLoop + 1;
         
-        // diagonals
-        strokeWeight(4);
-        stroke(255, 128, 0); // orange
-        Triangulate().get(j).draw();
-
+      } else if (subPolygons != null) {
+        showAfterMonotonePartition();
         
-        i = i + 100;
-        j++;
+        int i = 0, j = 0;
+        
+        for (int a = 0; a < subPolygons.size(); a++) {
+          while (i < aniLoop && j < Triangulate(subPolygons.get(a)).size()) {
+            
+            // diagonals
+            strokeWeight(4);
+            stroke(255,105,180); // pink
+            // stroke(0,255,0);
+            Triangulate(subPolygons.get(a)).get(j).draw();
+            
+            i = i + 200;
+            j++;
+          }
+          aniLoop = aniLoop + 1;
+          
+          // ??????????
+          if (j == Triangulate(subPolygons.get(a)).size()) {
+            j = 0;
+          }
+          
+        }
+      } else {
+        fill(255);
+        message = "NOT ABLE TO TRIANGULATE!!!!!";
+        
       }
-      aniLoop = aniLoop + 1;
     }
     
     
@@ -360,6 +397,10 @@ void home(){
       aniLoop = aniLoop + 1;
     }
     
+    // Show subpolygons
+    if (showSubPoly) {
+      showAfterMonotonePartition();
+    }
   }
 }
 

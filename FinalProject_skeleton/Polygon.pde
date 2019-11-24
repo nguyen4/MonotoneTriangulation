@@ -312,7 +312,7 @@ class Polygon {
      }
      return true; 
    }
-   ArrayList<Integer> orderedPointsPos() {
+   ArrayList<Integer> orderedPointsPos(ArrayList<Point> points) {
      Point key1 = new Point(0.0,0.0);
      
      // Ordered points
