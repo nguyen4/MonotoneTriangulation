@@ -9,12 +9,12 @@ public class DirectedGraph {
         if (poly.ccw){ initCcwGraph (p); }
         if (poly.cw) { initCwGraph  (p); }
         addDiagToGraph(diag);
-        
     }
     
     void initCcwGraph (ArrayList<Point> p) 
     {
-      for (int i = 0; i < p.size(); i++){
+      for (int i = 0; i < p.size(); i++)
+      {
         LinkedList<Point> newList = new LinkedList<Point>();
         newList.add(p.get(i));
         newList.add(p.get((i + 1) % p.size()));
@@ -24,7 +24,8 @@ public class DirectedGraph {
     
     void initCwGraph (ArrayList<Point> p) 
     {
-      for (int i = 0; i < p.size(); i++){
+      for (int i = 0; i < p.size(); i++)
+      {
         LinkedList<Point> newList = new LinkedList<Point>();
         newList.add(p.get(i));
         if (i == 0)
@@ -38,46 +39,50 @@ public class DirectedGraph {
     
     void addDiagToGraph (LinkedList<Edge> diag) 
     {
-      Point a, b;
-      a = diag.get(i).p0;
-      b = diag.get(i).p1;
-      
-      for (int j = 0; j < adjList.size(); j++){
-        if (a.equals( adjList.get(j).get(0))){
-          adjList.get(j).add(b);
+        for (int i = 0; i < diag.size(); i++)
+        {  
+          Point a, b;
+          a = diag.get(i).p0;
+          b = diag.get(i).p1;
+          
+          for (int j = 0; j < adjList.size(); j++)
+          {     
+            if (a.equals( adjList.get(j).get(0)) )
+            {
+              adjList.get(j).add(b);
+            }
+            else if (b.equals( adjList.get(j).get(0)) )
+            {
+              adjList.get(j).add(a);
+            } 
+          }
         }
-        else if (b.equals( adjList.get(j).get(0)) ){
-          adjList.get(j).add(a);
-        }
-      }
     }
     
     LinkedList getNeighbors(Point p)
     {
-     
-      for (int i = 0; i < adjList.size(); i++){
-       if (p.equals(adjList.get(i).get(0))){
+      for (int i = 0; i < adjList.size(); i++)
+      {
+       if ( p.equals(adjList.get(i).get(0)) ) 
+       {
          return adjList.get(i);
        }
-       
-     }
-     
-     return null;
+      }
+      return null;
    }
    
+   //checks to see if point is in Adjacency List
    boolean exists(Point p)
    {
-     
-     for (int i = 0; i < adjList.size(); i++){
-       if (p.equals(adjList.get(i).get(0))){ return true; }
+     for (int i = 0; i < adjList.size(); i++)
+     {
+       if (p.equals(adjList.get(i).get(0))) { return true; }
      }
-     return false;
-     
+     return false; 
    }
    
    void BEGONYATHOT(Point start, Point end)
    {
-     
      for (int i = 0; i < adjList.size(); i++){
        if (start.equals( adjList.get(i).get(0) )){
          adjList.get(i).remove(end);
@@ -90,7 +95,6 @@ public class DirectedGraph {
     
    void draw()
    {
-    
      for (int i = 0; i < adjList.size(); i++){
        adjList.get(i).get(0).draw();
        for (Point p : adjList.get(i)){
