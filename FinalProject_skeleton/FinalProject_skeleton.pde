@@ -314,13 +314,6 @@ void showBeforeMonotonePartition() {
       e.draw();
     }
     
-    //noFill();
-    //stroke(100);
-    //for( Edge e : newEdges ){
-    //  fill(255);
-    //  e.draw();
-    //}
-    
     noStroke();
     for( Triangle t : triangles ){
       fill( 100, 100, 100 );

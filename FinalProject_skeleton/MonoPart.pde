@@ -119,12 +119,9 @@ LinkedList<Edge> MonotonePartition(){
   
   
     println("Polygon is now Y-Monotone");
-    /* FIX MEEEEE
-    if(splitMerge.size() > 0)
-      return Partition(splitMerge);
-    */
+    
     return splitMerge;
-  //FIXMEEEE return null;
+  
 } 
 
 ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
@@ -147,10 +144,10 @@ ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
       }
     }
   }
-  dG = new DirectedGraph(poly.p, diagList);
+  dG = new DirectedGraph(poly,poly.p, diagList);
   println("Directed graph initialized");
   state = 1;
-  dG.printDirectedGraph();
+  dG.print();
   
   //this may create duplicates in the stack
   for (Edge e : diagList){
@@ -335,8 +332,6 @@ boolean isDiagonal(Edge diag){
      
     //check if edge does not interesect a bdry
     for (int j = 0; j < bdry.size(); j++){
-      // println("Intersection test " + (j+1));
-      //if it intersects the boundary
       
       //if the endpoints of the boundary and ray matches, skip
       if(  (diag.p0.p.x == bdry.get(j).p0.p.x && diag.p0.p.y == bdry.get(j).p0.p.y)||
@@ -346,7 +341,6 @@ boolean isDiagonal(Edge diag){
         {
           continue;
         }
-      
       
       if(diag.intersectionTest( bdry.get(j) )){
       
@@ -401,14 +395,6 @@ ArrayList<Event> makePQ() {
    
   }
   
-  // TEST PRINT RUN
-  for (int i = 0; i < pQueue.size(); i++) {
-   Event e = pQueue.get(i);
-   
-   // println(e.label+1 + ": " + "Point: " + e.P.toString() + "       " + myType[e.type]);
-  }
-  // println();
-  
   return pQueue;
   
 }
@@ -451,9 +437,9 @@ int findVertexType(int originalPos) {
     if (c.p.y < endPoint1.p.y && c.p.y < endPoint2.p.y) {
       test = new Triangle(endPoint1, c, endPoint2);
       if (test.ccw()) {
-       return 3;
+         return 3;
       } else {
-       return 4;
+         return 4;
       }
       
       // - - (checking difference between start and split
