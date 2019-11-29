@@ -153,12 +153,7 @@ ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
   ArrayList<Polygon>  subPolygons = new ArrayList<Polygon>();
   ArrayList<Point>    stack       = new ArrayList<Point>();
   ArrayList<Point>    newCycle;
-  Point               curr,prev;
   
-  /*
-    create a directed graph
-  */
-  //remove duplicate edges from diagList
   removeDuplicates(diagList);
   
   dG = new DirectedGraph(poly, poly.p, diagList);
@@ -175,42 +170,10 @@ ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
     {  
       stack.remove(0);
     } 
-    else {
-      
-      
-      newCycle = new ArrayList<Point>();
-      LinkedList<Point> neighbors = dG.getNeighbors( stack.get(0) );
-      newCycle.add( neighbors.get(0) );    //gets current vertex
-      newCycle.add( neighbors.get(1) );
-      prev = newCycle.get( 0 );
-      curr = newCycle.get( 1 );
-      
-      println("Looking for a cycle");
-      //finds a cycle in the graph
-      while( !curr.equals( newCycle.get( 0 ) ) )
-      { 
-        println("Checking the neighbors");
-        neighbors = dG.getNeighbors( curr );
-        
-        if (neighbors.size() > 2){
-          Point p = getCcwNeighbor( prev, neighbors );
-          newCycle.add( p );
-        }
-        else if (neighbors.size() == 2){
-          newCycle.add( neighbors.get( 1 ) );
-        }
-        else {
-          println("error in retrieving neighbors");
-        }
-        prev = curr;
-        curr = newCycle.get( newCycle.size() - 1 );
-      }
-      //newCycle = findCycle(dG, stack.get(0) );
-      
-      println("created a new cycle.");
-      
+    else 
+    {  
       Polygon subPoly = new Polygon();
-      
+      newCycle = findCycle(dG, stack.get(0) );
       
       for (int i = 0; i < newCycle.size(); i++){
         if (i == newCycle.size() - 1){
@@ -221,81 +184,37 @@ ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
           dG.BEGONYATHOT( newCycle.get(i), newCycle.get(i+1) );
         }
       }
-      println("deleting cycle from Directed Graph");
       
       subPolygons.add(subPoly);
       println("created " + subPolygons.size() + " polygons");
     }
   }
-  //Start of Algorithm
-  /*
-    Initialize stack of points from diagList
-  */
-  
-  //Algorithm
-  /*
-    * If top of stack exists in the polygon
-        start a new arrayList AL of points
-        add that point and its neighbor to AL
-        curr = AL.end
-        
-    *  While curr and first in AL are not the same
-         find neighbors of curr
-         
-         if neighbors.size > 1
-           add neighbor with the smallest ccw angle to AL
-         else if neighbores.size == 1
-           add neighbor to AL
-         else 
-           error
-         
-         curr = next in AL
-    
-    *  for each point p in AL
-         if (end of AL)
-           delete edge in DG
-         else
-           add point to new polygon 
-           delete p + 1 in AL from DG
-           
-         if p in DG is empty, remove from DG
-         
-       add new polygon to list of polygon
-  
-  */
-  
-  
-  /*
-    Find the sub polygons
-  */
-  println("Partitioning Complete");
+
   println("Number of sub polygons: " + subPolygons.size());
   return subPolygons;
 }
 
-ArrayList<Point> findCycle(DirectedGraph dG, Point current) {
+ArrayList<Point> findCycle(DirectedGraph dG, Point firstPoint) {
       
       Point              curr;
       Point              prev;
-      Point              firstInCycle;
       ArrayList<Point>   newCycle = new ArrayList<Point>();
-      
-      LinkedList<Point> neighbors = dG.getNeighbors( current );
-      newCycle.add( neighbors.get(0) );          //first point in the cycle
-      newCycle.add( neighbors.get(1) );          //next neighbor of the first point
-      firstInCycle = newCycle.get(0);
-      prev         = newCycle.get(0);                    //
-      curr         = newCycle.get(1);                    //start with the next neighbor of the first point
+      LinkedList<Point>  neighbors = dG.getNeighbors( firstPoint );
+       
+      prev = neighbors.get(0);
+      curr = neighbors.get(1);
+      newCycle.add( prev );    //gets current vertex
+      newCycle.add( curr );
       
       println("Looking for a cycle");
       //finds a cycle in the graph
-      while( !curr.equals( firstInCycle ) )
+      while( !curr.equals( newCycle.get( 0 ) ) )
       { 
         println("Checking the neighbors");
         neighbors = dG.getNeighbors( curr );
         
         if (neighbors.size() > 2){
-          Point p = getCcwNeighbor( firstInCycle, neighbors );
+          Point p = getCcwNeighbor( newCycle.get( 0 ), neighbors );
           newCycle.add( p );
         }
         else if (neighbors.size() == 2){
@@ -304,11 +223,10 @@ ArrayList<Point> findCycle(DirectedGraph dG, Point current) {
         else {
           println("error in retrieving neighbors");
         }
-        prev = curr;
         curr = newCycle.get( newCycle.size() - 1 );
       }
       
-    return new ArrayList<Point>();
+    return newCycle;
 }
 
 Point getCcwNeighbor(Point a, LinkedList<Point> neighbors){

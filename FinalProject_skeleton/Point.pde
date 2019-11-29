@@ -1,5 +1,3 @@
-
-
 class Point {
   
    public PVector p;
