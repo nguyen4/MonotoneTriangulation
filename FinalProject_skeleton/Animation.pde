@@ -86,14 +86,13 @@ void aniTrapezoidation(Point curr, int type, int j) {
       }
     }
   }
-  
 }
+
 void aniMonoY(ArrayList<Float> midPointsArr) {
   Event focus;
   int neighbor1Pos, originalPos, neighbor2Pos;
   Edge test;
   float midPointY = -1;
-  
   
   for (int i = 0; i < pqPresentX.size(); i++) {
    focus = pqPresentX.get(i);
@@ -134,7 +133,6 @@ void aniMonoY(ArrayList<Float> midPointsArr) {
      Point p0 = new Point(0, midPointsArr.get(i));
      Point p1 = new Point(width, midPointsArr.get(i));
      presentMidEdges.add(new Edge(p0, p1));
-     
      
      for (Edge p : presentMidEdges) {
        stroke(255, 0, 0);

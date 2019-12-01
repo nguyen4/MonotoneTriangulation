@@ -9,8 +9,7 @@ class Polygon {
      
    Polygon( ){  }
    
-   
-   boolean isClosed(){ return p.size()>=3; }
+   boolean isClosed(){ return p.size() >=3; }
 
    boolean isSimple(){
      // TODO: Check the boundary to see if it is simple or not.
