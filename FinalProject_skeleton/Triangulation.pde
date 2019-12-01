@@ -48,7 +48,6 @@ ArrayList<Edge> Triangulate(Polygon poly) {
      vPlus = poly.p.get(originalPosVPlus);
      int neighbor1Pos, neighbor2Pos;
     
-     
      // Insert first 2 V's
      if (i == 0 || i == 1) {
        reflexChain.add(originalPosV);

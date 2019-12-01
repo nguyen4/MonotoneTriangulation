@@ -8,6 +8,10 @@ LinkedList<Edge>          newEdges    ;
 
 Polygon                   poly        = new Polygon();
 String                    message     = null;
+int                       startTime   ;
+ArrayList<ArrayList<Edge>> triangulatedPolygons;
+int index             ;
+int polygonIndex      ;
 
 /////////////////////////////////////////
 //DATA STRUCTURES FOR TESTING SUBPOLYGONS
