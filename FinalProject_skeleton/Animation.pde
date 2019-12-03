@@ -215,7 +215,7 @@ void triangulationProcess() {
     if (subPolygons != null){
       showAfterMonotonePartition();
       animateTriangulation();
-      updateTimer();
+      //updateTimer();
     }
     else {
       fill(255);
@@ -241,6 +241,7 @@ void animateTriangulation() {
       //draws triangulation of subpolygons that haven't been shown yet
       if (polygonIndex < triangulatedPolygons.size()){
         drawTriangulation();
+        updateTimer();
       }
 }
 
@@ -257,21 +258,19 @@ void drawTriangulation(){
     
     //animates each edge from the triangulation edges of polygon at index
     for ( int j = 0; j < index; j++ ) {
-  
       // diagonals
       strokeWeight(4);
       stroke(255,105,180); // pink
       triangulatedPolygons.get(polygonIndex).get(j).draw();
-
     }
 }
 
 void updateTimer(){
-  
   //adds a timed delay in between each reveal of the edges
     if ((millis() - startTime) > 1500) {
-      if( index < triangulatedPolygons.get(polygonIndex).size() - 1)
+      if( index < triangulatedPolygons.get(polygonIndex).size() - 1) {
         index++;
+      }
       else {
         index = 0;
         polygonIndex++;
