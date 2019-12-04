@@ -117,12 +117,11 @@ LinkedList<Edge> MonotonePartition(){
     }
   }
   
-  
-    println("Polygon is now Y-Monotone");
+  println("Polygon is now Y-Monotone");
     
-    return splitMerge;
-  
+  return splitMerge;
 } 
+
 void removeDuplicates(LinkedList<Edge> list)
 {
     for (int i = 0; i < list.size(); i++){
@@ -148,11 +147,14 @@ ArrayList<Point> makeStack(LinkedList<Edge> list)
 
 ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
   
-  if (diagList.size() == 0) { return null; }
-  
   ArrayList<Polygon>  subPolygons = new ArrayList<Polygon>();
   ArrayList<Point>    stack       = new ArrayList<Point>();
   ArrayList<Point>    newCycle;
+  
+  if (diagList.size() == 0) 
+  { 
+    subPolygons.add(poly);
+  }
   
   removeDuplicates(diagList);
   

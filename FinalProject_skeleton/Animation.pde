@@ -210,9 +210,9 @@ void ySweepFunction() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /************************************************* TRIANGULATION ******************************************************/
-void triangulationProcess() {
+void triangulationRun() {
   
-    if (subPolygons != null){
+    if (triangulatedPolygons != null){
       showAfterMonotonePartition();
       animateTriangulation();
       updateTimer();
@@ -269,8 +269,8 @@ void drawTriangulation(){
 void updateTimer(){
   
   //adds a timed delay in between each reveal of the edges
-    if ((millis() - startTime) > 1500) {
-      if( index < triangulatedPolygons.get(polygonIndex).size() - 1)
+    if ((millis() - startTime) > 1500 && polygonIndex < triangulatedPolygons.size()) {
+      if( index < triangulatedPolygons.get(polygonIndex).size())
         index++;
       else {
         index = 0;
@@ -352,12 +352,14 @@ void triangulationSetUp(){
   triangulatedPolygons  = new ArrayList<ArrayList<Edge>>();
   
   if (showTrianglesAni) { 
-    showY = false; 
-    showX = false; 
-    showTrapAni = false; 
+    showY            = false; 
+    showX            = false; 
+    showTrapAni      = false; 
     showSubPoly      = false;
   }
- 
+   
+  newEdges = MonotonePartition();
+  subPolygons = Partition(newEdges);
   subPolygonsSetUp();
   
 }
@@ -378,11 +380,16 @@ void trapezoidationSetUp() {
 }
 
 void subPolygonsSetUp(){
-  if (subPolygons == null){
+  if (subPolygons == null)
+  {
     triangulatedPolygons.add( Triangulate(poly) );
-  }
-  for (Polygon p : subPolygons){
-    triangulatedPolygons.add(Triangulate( p ));
+  } 
+  else 
+  {
+    for (Polygon p : subPolygons)
+    {
+      triangulatedPolygons.add( Triangulate(p) );
+    }
   }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -230,13 +230,11 @@ void home(){
   if (message != null)
     textRHC( message, width/2, height-120 );
   
-  // Point Labels
-  // if (state == 0){
-    for( int i = 0; i < points.size(); i++ ){
-      fill(255);
-      textRHC( i+1, points.get(i).p.x+5, points.get(i).p.y+15 );
-    }
-  // }
+  //// Point Labels
+  //  for( int i = 0; i < points.size(); i++ ){
+  //    fill(255);
+  //    textRHC( i+1, points.get(i).p.x+5, points.get(i).p.y+15 );
+  //  }
 
   if( saveImage ) saveFrame( ); 
   saveImage = false;
@@ -254,7 +252,7 @@ void home(){
     if (showY) { ySweepFunction(); }
  
     // Animation of triangulation of one y monotone polygon
-    if (showTrianglesAni) { triangulationProcess(); }
+    if (showTrianglesAni) { triangulationRun(); }
 
     // Animation of trapezoidation
     if (showTrapAni) { animateTrapezoidation(); }
