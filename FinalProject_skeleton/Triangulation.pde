@@ -5,16 +5,9 @@ ArrayList<Edge> Triangulate(Polygon poly) {
   
   if (poly.isClosed()) {
     // WORKS ONLY FOR CCW POLYGON!
-    println("START TRIANGULATION");
     // Ordered V's (top to bottom)
     ArrayList<Integer> orderedPoints = new ArrayList<Integer>();
     orderedPoints = poly.orderedPointsPos(poly.p);
-    
-    // create copy of points to simulate polygon after ear cutting
-    ArrayList<Point> pointsCopy = new ArrayList<Point>();
-    for (int a = 0; a < poly.p.size(); a++) {
-      pointsCopy.add(new Point(poly.p.get(a).p.x, poly.p.get(a).p.y));  
-    }
     
     // Index and point of V and V+
     int originalPosV, originalPosVPlus;
@@ -40,17 +33,12 @@ ArrayList<Edge> Triangulate(Polygon poly) {
      originalPosV = orderedPoints.get(i);
      v = poly.p.get(originalPosV); 
      
-     println("i: " + i);
-     println("Original V Pos: " + originalPosV); 
-     
      // Store V+ (appropriately)
      if (i == 0) {
        originalPosVPlus = orderedPoints.get(orderedPoints.size()-1);
      } else {
        originalPosVPlus = orderedPoints.get(i - 1);
      }
-     
-     println("Original V Pos +: " + originalPosVPlus);
      
      // Store V+ after getting appropriate index
      vPlus = poly.p.get(originalPosVPlus);
@@ -74,12 +62,9 @@ ArrayList<Edge> Triangulate(Polygon poly) {
            
            // * create diagonal from v to second vertex from top of chain
            if ((originalPosV+1)%poly.p.size() != (reflexChain.get(1)) && originalPosV != ((reflexChain.get(1))+ 1)%poly.p.size()) {
-             println("CREATED DIAGONAL: 1 ");
              diagonals.add(new Edge(v, secondFromTopP));
-             
              // ----------------------------------------
              earCuttingOccured = true;
-             
              lastPoint = reflexChain.get(reflexChain.size()-2);
            }
            
@@ -98,26 +83,22 @@ ArrayList<Edge> Triangulate(Polygon poly) {
          //// need to check for STRICT CONVEXITY
          //// check if v+ is convex -------------------------------------------------------------------------------------------------------------------------------------------------------------
          
+         // Get first neighbor
          if (originalPosVPlus == 0) {
           neighbor1Pos = poly.p.size() - 1; 
          } else {
           neighbor1Pos = (originalPosVPlus - 1) % poly.p.size();
          }
-        //  neighbor1Pos = i - 1;
-         
-         
          // get current point's 2nd neighbor
          neighbor2Pos = (originalPosVPlus + 1) % poly.p.size();
-         // neighbor2Pos = i;
          
          
          if (earCuttingOccured) {
-           println("ear cutting occured: " + lastPoint);
            testVPlus = new Triangle(poly.p.get(lastPoint), vPlus, poly.p.get(neighbor2Pos)); 
-           println(lastPoint + "       " + originalPosVPlus + "           " + neighbor2Pos);
+           // println(lastPoint + "       " + originalPosVPlus + "           " + neighbor2Pos);
          } else {
            testVPlus = new Triangle(poly.p.get(neighbor1Pos), vPlus, poly.p.get(neighbor2Pos)); 
-           println(neighbor1Pos + "    *   " + originalPosVPlus + "      *     " + neighbor2Pos);
+           // println(neighbor1Pos + "    *   " + originalPosVPlus + "      *     " + neighbor2Pos);
          }
          
          // case 2 -- check if v is adjacent to bottom of reflex chain and v+ is strictly convex
@@ -130,11 +111,8 @@ ArrayList<Edge> Triangulate(Polygon poly) {
            // * draw diagonal from v to second vertex
            if ((originalPosV+1)%poly.p.size() != (reflexChain.get(reflexChain.size()-2)) && originalPosV != ((reflexChain.get(reflexChain.size()-2))+ 1)%poly.p.size()) {
              diagonals.add(new Edge(v, secondFromBottomP));
-             
-             println("CREATED DIAGONAL: 2 ");
              // ----------------------------------------2
              earCuttingOccured = true;
-             
              lastPoint = reflexChain.get(reflexChain.size()-2);
            }
            
@@ -150,12 +128,10 @@ ArrayList<Edge> Triangulate(Polygon poly) {
          // case 3 -- check if v is adjacent to bottom of reflex chain and v+ is reflex or flat
          // else if if cw, it is concave
          else if (testVPlus.cw()) {
-           println("CASE 3: 1");
            // * add v to chain, advance v at end of loop
            reflexChain.add(originalPosV);
   
          } else { // it is straight line
-           println("CASE 3: 2");
            // * add v to chain, advance v at end of loop
            reflexChain.add(originalPosV);
          }
@@ -198,6 +174,7 @@ ArrayList<Edge> Triangulate(Polygon poly) {
              continue;      
          }
          
+         // Intersection test
          if (diagI.intersectionTest(bdryC)) {
            
            intersectP = diagI.intersectionPoint(bdryC);
@@ -218,7 +195,6 @@ ArrayList<Edge> Triangulate(Polygon poly) {
         }
         
       }
-      
       // remove top in chain
       reflexChain.remove(0);
     }
