@@ -61,7 +61,7 @@ void draw(){
 
 void keyPressed(){
   if( key == 's' ) saveImage = true;
-  if( key == 'c' ) reset();
+  if( key == 'c' ) reset(); message = "";
   if( key == 'p' ) showPotentialDiagonals = !showPotentialDiagonals;
   if( key == 'd' ) showDiagonals = !showDiagonals;
 
@@ -202,12 +202,12 @@ void home(){
   
   // Notify user if function is in use by changing font color of showX label
   if (showX) { fill(255, 0, 0); } else { fill(255); }
-  textRHC( "x: X-Axis Sweep", 10, height-40);
+  textRHC( "x: Horizontal Sweep", 10, height-40);
   
   // Notify user if function is in use by changing font color of showY label
   fill(255);
   if (showY) { fill(255, 0, 0); } else { fill(255); }
-  textRHC( "y: Y-Axis Sweep", 10, height-60);
+  textRHC( "y: Vertical Sweep", 10, height-60);
   
   
   textRHC( "c: Clear Polygon", 10, height-80 );
