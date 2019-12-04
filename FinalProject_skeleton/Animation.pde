@@ -214,17 +214,42 @@ void triangulationRun() {
   
     if (triangulatedPolygons != null){
       showAfterMonotonePartition();
-      animateTriangulation();
+      animateTriangulationMono();
       //updateTimer();
     }
     else {
+      //fill(255);
+      //message = "NOT ABLE TO TRIANGULATE!!!!!";
       fill(255);
-      message = "NOT ABLE TO TRIANGULATE!!!!!";
-      
+      message = "Triangulation of Non Partitioned Polygon";
+      animateTriangulation();
     }
 }
-
 void animateTriangulation() {
+  // if original polygon is already y monotone
+  if (poly.isYMonotone()) {
+    int i = 0, j = 0;
+    
+    while (i < aniLoop && j < Triangulate(poly).size()) {
+      
+      // diagonals
+      strokeWeight(4);
+      stroke(255, 128, 0); // orange
+      Triangulate(poly).get(j).draw();
+
+      
+      i = i + 100;
+      j++;
+    }
+    aniLoop = aniLoop + 1;
+    
+  } else {
+    fill(255);
+    message = "NOT ABLE TO TRIANGULATE!!!!!";
+    
+  }
+}
+void animateTriangulationMono() {
       
       //prints entire triangulations that are finished
       for (int i = 0; i <= polygonIndex - 1; i++){
@@ -240,12 +265,12 @@ void animateTriangulation() {
       
       //draws triangulation of subpolygons that haven't been shown yet
       if (polygonIndex < triangulatedPolygons.size()){
-        drawTriangulation();
+        drawTriangulationMono();
         updateTimer();
       }
 }
 
-void drawTriangulation(){
+void drawTriangulationMono(){
     
     //makes the current subpolygon we are animating blue 
     for (Edge e : subPolygons.get(polygonIndex).bdry){
@@ -348,8 +373,11 @@ void triangulationSetUp(){
   index                 = 0;
   polygonIndex          = 0;
   startTime             = millis();
-  newEdges              = MonotonePartition();
-  subPolygons           = Partition(newEdges);
+  // only run through monotone partitioning if polygon is not Y Mono
+  if (!poly.isYMonotone()) {
+    newEdges              = MonotonePartition();
+    subPolygons           = Partition(newEdges);
+  }
   triangulatedPolygons  = new ArrayList<ArrayList<Edge>>();
   
   if (showTrianglesAni) { 
@@ -381,16 +409,27 @@ void trapezoidationSetUp() {
 }
 
 void subPolygonsSetUp(){
-  if (subPolygons == null)
-  {
-    triangulatedPolygons.add( Triangulate(poly) );
-  } 
-  else 
-  {
-    for (Polygon p : subPolygons)
-    {
-      triangulatedPolygons.add( Triangulate(p) );
+//<<<<<<< HEAD
+//  if (subPolygons == null)
+//  {
+//    triangulatedPolygons.add( Triangulate(poly) );
+//  } 
+//  else 
+//  {
+//    for (Polygon p : subPolygons)
+//    {
+//      triangulatedPolygons.add( Triangulate(p) );
+//=======
+  //if (subPolygons == null){
+  //  triangulatedPolygons.add( Triangulate(poly) );
+  //}
+  //else {
+  if (subPolygons != null) {
+    for (Polygon p : subPolygons){
+      triangulatedPolygons.add(Triangulate( p ));
+//>>>>>>> e7b9b3f9609f06ddc73854f16af386e6d6229418
     }
   }
+  //}
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
