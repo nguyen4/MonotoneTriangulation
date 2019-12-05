@@ -185,6 +185,7 @@ ArrayList<Polygon> Partition(LinkedList<Edge> diagList){
           subPoly.addPoint(newCycle.get(i));
           dG.BEGONYATHOT( newCycle.get(i), newCycle.get(i+1) );
         }
+        print(newCycle.get(i).toString());
       }
       
       subPolygons.add(subPoly);
@@ -216,7 +217,7 @@ ArrayList<Point> findCycle(DirectedGraph dG, Point firstPoint) {
         neighbors = dG.getNeighbors( curr );
         
         if (neighbors.size() > 2){
-          Point p = getCcwNeighbor( newCycle.get( 0 ), neighbors );
+          Point p = getCcwNeighbor( prev, neighbors );
           newCycle.add( p );
         }
         else if (neighbors.size() == 2){
@@ -225,25 +226,35 @@ ArrayList<Point> findCycle(DirectedGraph dG, Point firstPoint) {
         else {
           println("error in retrieving neighbors");
         }
+        prev = curr;
         curr = newCycle.get( newCycle.size() - 1 );
+        
       }
       
     return newCycle;
 }
 
+//returns the next point with the smallest ccw angle
 Point getCcwNeighbor(Point a, LinkedList<Point> neighbors){
   Point b = neighbors.get(0);
   Point c;
   
   float[] angles = new float[neighbors.size() - 1]; 
+  float angle;
   
   for (int i = 1; i < neighbors.size(); i++){
-     c = neighbors.get(i);
+     
+    c = neighbors.get(i);
+     
+     if (c.equals(a))
+     {
+          angles[i-1] = 0;
+          println("found a two point loop");
+          continue;
+     }
+     
      Triangle t = new Triangle(a, b, c);
-     //find angle
-     PVector v1 = PVector.sub( a.p, b.p );
-     PVector v2 = PVector.sub( c.p, b.p );
-     float angle = PVector.angleBetween(v1, v2);
+     angle = findAngle(a, b, c);
      
      if (t.ccw()){
        angles[i-1] = angle;
@@ -252,14 +263,18 @@ Point getCcwNeighbor(Point a, LinkedList<Point> neighbors){
        angles[i-1] = 360 - angle;
      }
      else {
-       angles[i-1] = 0;
+       angles[i-1] = 180;
      } 
   }
   
   int minIndex = 0;
+  //make sure the first angle is not 0;
+  while (angles[minIndex] == 0){
+    minIndex = (minIndex + 1) % (angles.length - 1);
+  }
   
-  for (int i = 1; i < angles.length; i++){
-    if (angles[minIndex] == 0){
+  for (int i = minIndex; i < angles.length; i++){
+    if (angles[i] == 0){
       continue;
     }
     if (angles[minIndex] > angles[i]){
@@ -268,6 +283,13 @@ Point getCcwNeighbor(Point a, LinkedList<Point> neighbors){
   }
   
   return neighbors.get(minIndex + 1);
+}
+
+float findAngle(Point a, Point b, Point c)
+{
+     PVector v1 = PVector.sub( a.p, b.p );
+     PVector v2 = PVector.sub( c.p, b.p );
+     return PVector.angleBetween(v1, v2);
 }
    
 Edge merge_Helper(Event current, Event merge) {
@@ -412,7 +434,8 @@ int findVertexType(int originalPos) {
   if (poly.ccw) {
     
     // + + (checking difference between merge and end)
-    if (c.p.y < endPoint1.p.y && c.p.y < endPoint2.p.y) {
+    if (c.p.y < endPoint1.p.y && c.p.y <= endPoint2.p.y ||
+        c.p.y <= endPoint1.p.y && c.p.y < endPoint2.p.y) {
       test = new Triangle(endPoint1, c, endPoint2);
       if (test.ccw()) {
          return 3;
@@ -421,7 +444,9 @@ int findVertexType(int originalPos) {
       }
       
       // - - (checking difference between start and split
-    } else if (c.p.y > endPoint1.p.y && c.p.y > endPoint2.p.y){
+    } else if (c.p.y > endPoint1.p.y && c.p.y >= endPoint2.p.y ||
+               c.p.y >= endPoint1.p.y && c.p.y > endPoint2.p.y)
+    {
       // check which endpoint is on the left
       test = new Triangle(endPoint1, c, endPoint2);
       if (test.ccw()) {
@@ -429,13 +454,15 @@ int findVertexType(int originalPos) {
       } else {
        return 5;
       }
-    }
+    } 
     
     // WHEN POLYGON IS CW
   } else {
     // + + (checking difference between merge and end)
-    if (c.p.y < endPoint1.p.y && c.p.y < endPoint2.p.y) {
-      println("Found merge/end");
+    if (c.p.y < endPoint1.p.y && c.p.y <= endPoint2.p.y ||
+        c.p.y <= endPoint1.p.y && c.p.y < endPoint2.p.y) 
+    {
+      //println("Found merge/end");
       // check which endpoint is on the left
       test = new Triangle(endPoint1, c, endPoint2);
       if (test.cw()) { return 3; } 
@@ -443,7 +470,9 @@ int findVertexType(int originalPos) {
       // collinear???
       
     // - - (checking difference between start and split
-    } else if (c.p.y > endPoint1.p.y && c.p.y > endPoint2.p.y){
+    } else if (c.p.y > endPoint1.p.y && c.p.y >= endPoint2.p.y ||
+               c.p.y >= endPoint1.p.y && c.p.y > endPoint2.p.y) 
+    {
       // check which endpoint is on the left
       test = new Triangle(endPoint1, c, endPoint2);
       if (test.cw()) {
