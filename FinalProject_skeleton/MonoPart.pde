@@ -434,8 +434,7 @@ int findVertexType(int originalPos) {
   if (poly.ccw) {
     
     // + + (checking difference between merge and end)
-    if (c.p.y < endPoint1.p.y && c.p.y <= endPoint2.p.y ||
-        c.p.y <= endPoint1.p.y && c.p.y < endPoint2.p.y) {
+    if (c.p.y < endPoint1.p.y && c.p.y < endPoint2.p.y) {
       test = new Triangle(endPoint1, c, endPoint2);
       if (test.ccw()) {
          return 3;
@@ -444,9 +443,7 @@ int findVertexType(int originalPos) {
       }
       
       // - - (checking difference between start and split
-    } else if (c.p.y > endPoint1.p.y && c.p.y >= endPoint2.p.y ||
-               c.p.y >= endPoint1.p.y && c.p.y > endPoint2.p.y)
-    {
+    } else if (c.p.y > endPoint1.p.y && c.p.y > endPoint2.p.y){
       // check which endpoint is on the left
       test = new Triangle(endPoint1, c, endPoint2);
       if (test.ccw()) {
@@ -454,14 +451,12 @@ int findVertexType(int originalPos) {
       } else {
        return 5;
       }
-    } 
+    }
     
     // WHEN POLYGON IS CW
   } else {
     // + + (checking difference between merge and end)
-    if (c.p.y < endPoint1.p.y && c.p.y <= endPoint2.p.y ||
-        c.p.y <= endPoint1.p.y && c.p.y < endPoint2.p.y) 
-    {
+    if (c.p.y < endPoint1.p.y && c.p.y < endPoint2.p.y) {
       //println("Found merge/end");
       // check which endpoint is on the left
       test = new Triangle(endPoint1, c, endPoint2);
@@ -470,9 +465,7 @@ int findVertexType(int originalPos) {
       // collinear???
       
     // - - (checking difference between start and split
-    } else if (c.p.y > endPoint1.p.y && c.p.y >= endPoint2.p.y ||
-               c.p.y >= endPoint1.p.y && c.p.y > endPoint2.p.y) 
-    {
+    } else if (c.p.y > endPoint1.p.y && c.p.y > endPoint2.p.y){
       // check which endpoint is on the left
       test = new Triangle(endPoint1, c, endPoint2);
       if (test.cw()) {
