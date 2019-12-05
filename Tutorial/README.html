@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="main.css">
+    </head>
+    <body>
+        
+        <div class="section"> 
+            <h1>Animation of a Monotone Polygon and Triangulation</h1>
+        
+            <a href="Images/Triangulated_Polygon_2.png">
+                <img alt="A screenshot showing a triangulated polygon" src="Images/Triangulated_Polygon_2.png"/>
+            </a>
+
+            <h2>Our Project</h2>
+
+            <p>
+                Welcome to our project. We have developed a program in Processing 3 to bring you a geometric triangulation visualizer, namely Monotone Partition and Monotone Triangulation. The idea is for you to create your own polygon using our software and see the process of adding triangles inside the polygon. The program will process your simple polygon input, test to see if it is y-monotone, partition the polygon into y-monotone parts, and finally triangulates each y-monotone subpolygons to the very end.
+            </p>
+
+            <h3>
+                But how do I use this thing?
+            </h3>
+
+            <p>
+                Lucky for you, we have created a neat tutorial you can follow along as you go nuts on your polygon triangulation adventure.
+            </p>
+        </div>
+        
+        
+        <h2>Tutorial</h2>
+        <p>
+            Before you can start making polygons, we need to ensure you have the neccessary files and program. If you haven't done so already, click here to download the latest version of our project. After you've unzipped the file and opened it, there should be two folders; MonotoneTriangulation and Tutorial.
+        </p>
+        
+        <h3>Step 1: Getting Started</h3>
+        <p>
+            Navigate to MonotoneTriangualtion, then to FinalProject_skeleton. Click on any of the pde files to open the workspace in Processing 3+.
+        </p>
+        
+        <h3>Step 2: Run</h3>
+        <p>
+            Once Processing 3+ is opened, click on the run button in the top left corner of the window. This will open a new window that runs the program.
+        </p>
+        
+        <h3>Step 3: Navigate</h3>
+        
+        <img src= "Images/Navigation.png">
+        <p>
+            On this screen, you will notice two areas of interests. The top left corner displays the controls of the program. These are the functions of the program which can be activated by pressing the corresponding letters. We will go more in depth into each functionality. The bottom right corner displays information about the polygon. 
+        </p>
+        
+        <h3>Step 4: Draw a polygon</h3>
+        
+        <img src= "Images/making_points.gif">
+        
+        <p>
+            Click anywhere on the screen to add a point. Each point added will have an edge connected to the previous point, and the first point. Adding 3 or more points will create a simple polygon. 
+        </p>
+        
+        <img src= "Images/dragging.gif">
+        
+        <p>You can also click and drag a point to re-position it.</p>
+        
+        <p>
+            Start by making a non y-monotone polygon. Drag the points around to reshape the polygon until it is simple or when you're satisfied with your shape.
+        </p>
+        
+        <h3>Step 5: Check for Y-monotonicity</h3>
+        
+        <img src= "Images/vertical_sweep.gif">
+        
+        <p>
+            Press the 'x' button to perform a vertical line intersection test on the polygon. Red lines appears where one of the chains intersect the vertical line more than once. If red lines do appear, that indicates the polygon is not monotone with respect to the y axis. The bottome left corner of the window will also show this.
+        </p>
+        
+        <h3>Step 6: Perform Y Monotone Partition</h3>
+        
+        <img src= "Images/partitioning.gif">
+        
+        <p>
+            This will only create Y-monotone polygons. Press the 'm' button and the program will animate the partitioning using trapezoidation. The program will start adding edges to split and merge vertices of the polygon.
+        </p>
+        
+        <h3>Step 7: Triangulate</h3>
+        
+        <img src= "Images/triangulation.gif">
+        
+        <p>
+            Press the 't' button. This performs y monotone triangulation on the subpolygons created from monotone partitioning. You will see an animation of each edge being added to the polygons.
+        </p>
+        
+        <h2>You did it!</h2>
+        
+        <p>
+            You have successfully triangulated your polygon! Now you're a veteran triangulator. Go ahead and triangulate new polygons.
+        </p>
+        
+    </body>
+</html>
